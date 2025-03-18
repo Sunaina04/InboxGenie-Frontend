@@ -4,6 +4,7 @@ import EmailCard from "../emailCard";
 import Loading from "../../components/Loading";
 import AIResponseDialog from "../aiResponseDialog";
 import EmailFilter from "../emailFilter";
+import aiResponseStore from "../../stores/aiResponseStore";
 
 const Dashboard = () => {
   const [emails, setEmails] = useState([]);
@@ -20,10 +21,11 @@ const Dashboard = () => {
   }, []);
 
   const handleAIResponse = (email) => {
-    const response = "Thank you for your email. We'll respond shortly.";
-    setAIResponse(response);
-    setSelectedEmail(email);
-    setOpenDialog(true);
+    aiResponseStore.fetchAIResponse(email.body).then(() => {
+      setSelectedEmail(email);
+      setAIResponse(aiResponseStore.aiResponse);
+      setOpenDialog(true);
+    });
   };
 
   const handleCloseDialog = () => {
