@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./config/theme";
 import App from "./core/index";
+<script src="https://apis.google.com/js/api.js"></script>;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

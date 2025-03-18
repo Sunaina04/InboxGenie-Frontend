@@ -12,14 +12,12 @@ const Dashboard = lazy(() => import("../pages/dashboard"));
 
 const publicRoutes = [{ path: publicPaths.login, Component: <LoginPage /> }];
 
-const privateRoutes = {
-  admin: [
-    {
-      path: privatePaths.admin.dashbaord,
-      Component: <Dashboard />,
-    },
-  ],
-};
+const privateRoutes = [
+  {
+    path: privatePaths.dashbaord,
+    Component: <Dashboard />,
+  },
+];
 
 const App = () => {
   const role = localStorage.getItem("role");
@@ -27,7 +25,7 @@ const App = () => {
   return (
     <Suspense fallback={<LinearProgress />}>
       <Routes>
-        {privateRoutes?.[role]?.map((route) => (
+        {privateRoutes.map((route) => (
           <Route
             key={route.path}
             path={route.path}

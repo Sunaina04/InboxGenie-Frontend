@@ -1,8 +1,10 @@
 export const defaultPath = "/";
 export const privatePaths = {
-  admin: {
-    dashbaord: "/main-page",
-  },
+  dashbaord: "/main-page",
+
+  // admin: {
+  //   dashbaord: "/main-page",
+  // },
 };
 
 export const publicPaths = {

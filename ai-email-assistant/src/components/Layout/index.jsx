@@ -10,7 +10,6 @@ import Loading from "../Loading";
 
 const Layout = ({ children }) => {
   const classes = getStyles();
-  const role = localStorage.getItem("role");
   const [menuRoutes, setMenuRoutes] = useState();
   const location = useLocation();
   const navigate = useNavigate();
@@ -22,13 +21,9 @@ const Layout = ({ children }) => {
   }, [location, menuRoutes]);
 
   useEffect(() => {
-    if (role) {
-      const menu = menuOptions()[role]?.filter((menuItem) => {
-        return menuItem;
-      });
-      setMenuRoutes(menu);
-    }
-  }, [role]);
+    const menu = menuOptions()?.filter((menuItem) => menuItem);
+    setMenuRoutes(menu);
+  }, []); // No need to depend on `role` since it's not used
 
   const [active, setActive] = useState(
     menuRoutes?.find((item) => location.pathname === item.path)
@@ -63,7 +58,6 @@ const Layout = ({ children }) => {
       >
         <Box sx={classes.sideBarHeader}>
           <img src={"LogoIcon"} alt="logo" />
-          <Typography variant="h6">itc@itc.city.com</Typography>
         </Box>
         <Box sx={classes.sideBarContent}>
           {menuRoutes &&
@@ -84,7 +78,6 @@ const Layout = ({ children }) => {
             sx={classes.logout}
             onClick={() => logout({ callback: navigate("/") })}
           >
-            {/* <LogoutIcon /> */}
             <Typography variant="h6">Logout</Typography>
           </Box>
         </Box>

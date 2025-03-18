@@ -18,10 +18,10 @@ function getCookie(name) {
 const csrfToken = getCookie("csrftoken");
 
 const instance = axios.create({
-  baseURL: BASE_URL, // Backend URL
-  withCredentials: true, // This will send cookies (including CSRF token) with requests
+  baseURL: BASE_URL,
+  withCredentials: true,
   headers: {
-    "X-CSRFToken": csrfToken, // Include CSRF token in headers
+    "X-CSRFToken": csrfToken,
   },
 });
 

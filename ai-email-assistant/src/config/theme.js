@@ -8,6 +8,7 @@ const theme = createTheme({
       active: "#8786ED",
       blueGrey: "#788CA5",
       darkPurple: "#1D1974",
+      sky: "#41a0d2",
     },
     button: {
       lightGreen: "#78C4B2",
