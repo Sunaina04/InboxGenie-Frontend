@@ -7,6 +7,7 @@ import MenuItem from "./MenuItem";
 import { getStyles } from "./styles";
 import authStore from "../../stores/authStore";
 import Loading from "../Loading";
+import { LogoutOutlined } from "@mui/icons-material";
 
 const Layout = ({ children }) => {
   const classes = getStyles();
@@ -78,6 +79,7 @@ const Layout = ({ children }) => {
             sx={classes.logout}
             onClick={() => logout({ callback: navigate("/") })}
           >
+            <LogoutOutlined />
             <Typography variant="h6">Logout</Typography>
           </Box>
         </Box>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogActions,
@@ -9,6 +9,7 @@ import {
   Typography,
   Box,
   TextField,
+  TextareaAutosize,
 } from "@mui/material";
 import { Close, CheckCircle, Edit, Send } from "@mui/icons-material";
 
@@ -22,63 +23,125 @@ const AIResponseDialog = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedResponse, setEditedResponse] = useState(aiResponse);
 
+  // Set editedResponse to aiResponse when dialog opens or aiResponse changes
+  useEffect(() => {
+    setEditedResponse(aiResponse);
+  }, [aiResponse, open]);
+
   const handleEdit = () => {
     setIsEditing(true);
   };
 
   const handleSave = () => {
-    handleApprove(editedResponse);
+    handleApprove(editedResponse); // Send the edited response
     setIsEditing(false);
   };
 
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle sx={{ backgroundColor: "#e8f0fe", color: "#1a73e8" }}>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle
+        sx={{
+          backgroundColor: "#41a0d2",
+          color: "#ffffff",
+          position: "relative",
+          padding: "16px 24px",
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
+        }}
+      >
         AI Response
         <IconButton
           edge="end"
           color="inherit"
           onClick={handleClose}
-          sx={{ position: "absolute", right: 8, top: 8 }}
+          sx={{
+            position: "absolute",
+            right: 16,
+            top: 16,
+            color: "#ffffff",
+            "&:hover": {
+              backgroundColor: "transparent",
+            },
+          }}
         >
           <Close />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ backgroundColor: "#ffffff", padding: "24px" }}>
-        <Typography variant="body1" color="textSecondary" sx={{ mb: 2 }}>
-          <strong>AI-generated Response:</strong>
-        </Typography>
-
+      <DialogContent
+        sx={{
+          backgroundColor: "#f9f9f9",
+          padding: "24px",
+          borderBottomLeftRadius: "8px",
+          borderBottomRightRadius: "8px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
+        {/* Display AI response or text field for editing */}
         {!isEditing ? (
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-            {aiResponse || "No AI response available."}
-          </Typography>
+          <Box
+            sx={{
+              mt: 2,
+              backgroundColor: "#ffffff",
+              padding: "16px",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              whiteSpace: "pre-line", // Preserves line breaks
+              fontSize: "14px",
+              lineHeight: 1.6,
+              maxHeight: "300px", // Limit height to ensure scrollability
+              overflowY: "auto", // Enable scrolling if content overflows
+            }}
+          >
+            <Typography variant="body2" color="textSecondary">
+              {aiResponse || "No AI response available."}
+            </Typography>
+          </Box>
         ) : (
-          <TextField
+          <TextareaAutosize
             multiline
             fullWidth
             value={editedResponse}
-            onChange={(e) => setEditedResponse(e.target.value)}
+            onChange={(e) => setEditedResponse(e.target.value)} // Handle editing
             sx={{
               mb: 2,
-              backgroundColor: "#f5f5f5",
+              mt: 2,
+              backgroundColor: "#ffffff",
               borderRadius: 1,
-              padding: 1,
+              padding: "12px",
+              fontSize: "14px",
+              lineHeight: 1.6,
+              minHeight: "360px",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              overflowY: "auto",
             }}
           />
         )}
+      </DialogContent>
 
-        <Box display="flex" justifyContent="space-between" sx={{ mt: 2 }}>
+      <DialogActions
+        sx={{
+          padding: "16px 24px",
+          justifyContent: "center",
+          backgroundColor: "#ffffff",
+          borderBottomLeftRadius: "8px",
+          borderBottomRightRadius: "8px",
+        }}
+      >
+        <Box display="flex" gap={2} justifyContent="center">
           {!isEditing && (
             <Button
               variant="contained"
               color="primary"
-              startIcon={<CheckCircle />}
               sx={{
                 fontWeight: 600,
                 textTransform: "none",
-                paddingX: 3,
+                paddingX: 2,
+                paddingY: 1.5,
+                fontSize: "16px",
+                borderRadius: "8px",
                 "&:hover": {
                   backgroundColor: "#1565c0",
                 },
@@ -92,11 +155,13 @@ const AIResponseDialog = ({
           <Button
             variant="outlined"
             color="primary"
-            startIcon={<Edit />}
             sx={{
               fontWeight: 600,
               textTransform: "none",
               paddingX: 3,
+              paddingY: 1.5,
+              fontSize: "16px",
+              borderRadius: "8px",
               "&:hover": {
                 backgroundColor: "#e3f2fd",
               },
@@ -115,6 +180,9 @@ const AIResponseDialog = ({
                 fontWeight: 600,
                 textTransform: "none",
                 paddingX: 3,
+                paddingY: 1.5,
+                fontSize: "16px",
+                borderRadius: "8px",
                 "&:hover": {
                   backgroundColor: "#1565c0",
                 },
@@ -128,11 +196,13 @@ const AIResponseDialog = ({
           <Button
             variant="contained"
             color="primary"
-            startIcon={<Send />}
             sx={{
               fontWeight: 600,
               textTransform: "none",
               paddingX: 3,
+              paddingY: 1.5,
+              fontSize: "16px",
+              borderRadius: "8px",
               "&:hover": {
                 backgroundColor: "#1565c0",
               },
@@ -142,16 +212,6 @@ const AIResponseDialog = ({
             Send
           </Button>
         </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ backgroundColor: "#e8f0fe" }}>
-        <Button
-          onClick={handleClose}
-          color="primary"
-          sx={{ textTransform: "none" }}
-        >
-          Close
-        </Button>
       </DialogActions>
     </Dialog>
   );
