@@ -47,13 +47,7 @@ class AuthStore {
           if (data.success) {
             localStorage.setItem("role", "admin");
             localStorage.setItem("user", JSON.stringify(data.user));
-            navigate &&
-              navigate(
-                privatePaths["admin"][Object.keys(privatePaths["admin"])[0]],
-                {
-                  replace: true,
-                }
-              );
+            navigate && navigate(privatePaths.dashbaord);
             window.location.reload();
           }
         }

@@ -22,6 +22,7 @@ export const menuOptions = () => [
     path: privatePaths.inbox, // Define this path in your routes
     icon: <InboxIcon />, // Use MUI icon
     componentTitle: "Inbox - View Emails",
+    path: privatePaths.inbox,
   },
   // {
   //   id: "aiResponses",
