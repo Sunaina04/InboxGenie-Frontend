@@ -1,7 +1,7 @@
 import { makeObservable, observable, action, runInAction } from "mobx";
 import axios from "../config/axios";
 import { privatePaths } from "../config/routes";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
 const { REACT_APP_GOOGLE_REDIRECT_URI } = process.env;
@@ -47,7 +47,7 @@ class AuthStore {
           if (data.success) {
             localStorage.setItem("role", "admin");
             localStorage.setItem("user", JSON.stringify(data.user));
-            navigate && navigate(privatePaths.dashbaord);
+            navigate && navigate(privatePaths.inbox);
             window.location.reload();
           }
         }
@@ -72,23 +72,16 @@ class AuthStore {
     try {
       const response = await axios.get("/emails/");
       runInAction(() => {
-        console.log("response", response);
         if (response.status === 200) {
-          console.log("response.data.emails", response.data.emails);
           this.emails = response.data.emails;
           localStorage.setItem("email", JSON.stringify(response.data.emails));
-          console.log(
-            "localStorage.getItem emil",
-            localStorage.getItem("email")
-          );
         } else {
           toast.error("Failed to fetch emails.");
         }
       });
     } catch (error) {
-      runInAction(() => {
-        toast.error("Error fetching emails.");
-      });
+      toast.error("Failed to fetch emails.");
+      console.log("here.......................");
       console.error("Error fetching emails:", error);
     } finally {
       runInAction(() => {

@@ -6,12 +6,14 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./config/theme";
 import App from "./core/index";
+import toast, { Toaster } from "react-hot-toast";
 <script src="https://apis.google.com/js/api.js"></script>;
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <ThemeProvider theme={theme}>
+      <Toaster />
       <CssBaseline />
       <App />
     </ThemeProvider>

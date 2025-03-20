@@ -18,7 +18,7 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    navigate("/dashboard");
+    navigate("/inbox");
   };
   console.log("emails", emails);
 
@@ -29,7 +29,7 @@ const Login = () => {
           await authStore.fetchEmails();
           setEmails(authStore.emails);
           console.log("emails", emails);
-          navigate("/main-page");
+          navigate("/inbox");
         } catch (error) {
           console.error("Error during fetching emails:", error);
         }

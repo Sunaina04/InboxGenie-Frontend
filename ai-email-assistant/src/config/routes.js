@@ -1,6 +1,6 @@
 export const defaultPath = "/";
 export const privatePaths = {
-  dashbaord: "/main-page",
+  // dashbaord: "/main-page",
   inbox: "/inbox",
   email: "/email/:id",
 

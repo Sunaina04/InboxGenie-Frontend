@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -6,53 +6,18 @@ import {
   Typography,
   Button,
   List,
+  Pagination,
 } from "@mui/material";
 import { Delete, MarkEmailRead } from "@mui/icons-material";
-import EmailItem from "../emailItem"; // Import EmailItem component
+import EmailItem from "../emailItem";
 import { useNavigate } from "react-router-dom";
-
-const emailsData = [
-  {
-    id: 1,
-    subject: "Meeting Update",
-    snippet: "We have a scheduled meeting at 3 PM tomorrow...",
-    timestamp: "2 hours ago",
-    body: "This is the full email body content for the Meeting Update.",
-    sender: "john.doe@example.com",
-    isSelected: false,
-  },
-  {
-    id: 2,
-    subject: "Project Status",
-    snippet: "Here's the update on the project status...",
-    timestamp: "5 hours ago",
-    body: "This is the full email body content for Project Status.",
-    sender: "alice.smith@example.com",
-    isSelected: false,
-  },
-  {
-    id: 3,
-    subject: "Invoice #2345",
-    snippet: "Your invoice for March has been generated...",
-    timestamp: "1 day ago",
-    body: "This is the full email body content for Invoice #2345.",
-    sender: "accounting@example.com",
-    isSelected: false,
-  },
-  {
-    id: 4,
-    subject: "Job Interview Confirmation",
-    snippet: "Congratulations, your interview is scheduled for next week...",
-    timestamp: "2 days ago",
-    body: "This is the full email body content for Job Interview Confirmation.",
-    sender: "hr@example.com",
-    isSelected: false,
-  },
-];
+import authStore from "../../stores/authStore";
 
 const Inbox = () => {
-  const [emails, setEmails] = useState(emailsData);
+  const [emails, setEmails] = useState([]);
   const [selectedEmails, setSelectedEmails] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [emailsPerPage] = useState(5);
   const navigate = useNavigate();
 
   const handleSelectEmail = (emailId) => {
@@ -78,6 +43,20 @@ const Inbox = () => {
     navigate(`/email/${clickedEmail.id}`, { state: clickedEmail });
   };
 
+  useEffect(() => {
+    authStore.fetchEmails();
+    const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
+    setEmails(fetchedEmails);
+  }, []);
+
+  const indexOfLastEmail = currentPage * emailsPerPage;
+  const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
+  const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   return (
     <Box
       sx={{
@@ -96,7 +75,6 @@ const Inbox = () => {
         </Typography>
         <Divider sx={{ marginBottom: "16px", borderColor: "#e0e0e0" }} />
 
-        {/* Bulk Action Buttons */}
         <Box
           display="flex"
           justifyContent="flex-start"
@@ -144,17 +122,24 @@ const Inbox = () => {
           </Button>
         </Box>
 
-        {/* Email List */}
         <List sx={{ padding: 0 }}>
-          {emails.map((email) => (
+          {currentEmails.map((email) => (
             <EmailItem
               key={email.id}
               email={email}
               onSelect={handleSelectEmail}
-              onClick={() => handleEmailClick(email.id)} // Pass email.id to handleEmailClick
+              onClick={() => handleEmailClick(email.id)}
             />
           ))}
         </List>
+
+        <Pagination
+          count={Math.ceil(emails.length / emailsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ marginTop: "16px", display: "flex", justifyContent: "center" }}
+        />
       </Container>
     </Box>
   );

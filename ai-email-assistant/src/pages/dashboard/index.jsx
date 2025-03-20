@@ -5,6 +5,7 @@ import Loading from "../../components/Loading";
 import AIResponseDialog from "../aiResponseDialog";
 import EmailFilter from "../emailFilter";
 import aiResponseStore from "../../stores/aiResponseStore";
+import authStore from "../../stores/authStore";
 
 const Dashboard = () => {
   const [emails, setEmails] = useState([]);
@@ -33,6 +34,10 @@ const Dashboard = () => {
     setSelectedEmail(null);
     setAIResponse("");
   };
+
+  useEffect(() => {
+    authStore.fetchEmails();
+  }, []);
 
   return (
     <Container

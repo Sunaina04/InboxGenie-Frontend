@@ -5,6 +5,8 @@ import Loading from "../../components/Loading";
 import { ArrowBack } from "@mui/icons-material";
 import AIResponseDialog from "../aiResponseDialog";
 import aiResponseStore from "../../stores/aiResponseStore";
+import EmailFilter from "../emailFilter";
+import EmailCard from "../emailCard";
 
 const EmailDetail = () => {
   const location = useLocation();
@@ -14,6 +16,7 @@ const EmailDetail = () => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
+  const [filter, setFilter] = useState("All");
 
   useEffect(() => {
     // If no email is passed in location, redirect to inbox page
@@ -51,43 +54,40 @@ const EmailDetail = () => {
           >
             Back to Inbox
           </Button>
+          <EmailFilter filter={filter} setFilter={setFilter} />
 
-          {/* Email Header */}
-          <Typography variant="h4" sx={{ fontWeight: 600 }}>
-            {email.subject}
-          </Typography>
-
-          <Typography variant="body1" color="textSecondary">
-            From: {email.sender} <br />
-            Sent: {email.timestamp} <br />
-            To: {email.receiver}
-          </Typography>
-
-          <Divider sx={{ marginY: 2 }} />
-
-          {/* Email Body */}
-          <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
-            {email.body}
-          </Typography>
-
-          <Box sx={{ display: "flex", gap: 2, marginTop: 2 }}>
-            {/* Action Buttons */}
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleAIResponse}
-              sx={{ fontWeight: 600 }}
+          <Box sx={{ flexGrow: 1, padding: 4 }}>
+            <Typography variant="h4" color="primary" gutterBottom>
+              Emails
+            </Typography>
+            <Box
+              sx={{
+                display: "grid",
+                gap: 3,
+                gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
+                padding: 2,
+                maxWidth: "1200px",
+                margin: "0 auto",
+              }}
             >
-              Generate AI Response
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => alert("Delete email")}
-              sx={{ fontWeight: 600 }}
-            >
-              Delete
-            </Button>
+              {loading ? (
+                <Loading />
+              ) : email ? (
+                <EmailCard
+                  key={email.id}
+                  email={email}
+                  handleAIResponse={handleAIResponse}
+                />
+              ) : (
+                <Typography
+                  variant="body1"
+                  color="textSecondary"
+                  align="center"
+                >
+                  No emails available.
+                </Typography>
+              )}
+            </Box>
           </Box>
         </Box>
       )}

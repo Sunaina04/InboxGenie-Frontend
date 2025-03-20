@@ -5,16 +5,16 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 // import SettingsIcon from "@mui/icons-material/Settings";
 
 export const menuOptions = () => [
-  {
-    id: "mainPage",
-    layoutTitle: "Homepage",
-    menuTitle: "Main Page",
-    componentTitle: "Dashboard",
-    layoutTooltip: true,
-    componentTooltip: false,
-    icon: <MailOutlineIcon />,
-    path: privatePaths.dashbaord,
-  },
+  // {
+  //   id: "mainPage",
+  //   layoutTitle: "Homepage",
+  //   menuTitle: "Main Page",
+  //   componentTitle: "Dashboard",
+  //   layoutTooltip: true,
+  //   componentTooltip: false,
+  //   icon: <MailOutlineIcon />,
+  //   path: privatePaths.dashbaord,
+  // },
 
   {
     id: "inbox",
