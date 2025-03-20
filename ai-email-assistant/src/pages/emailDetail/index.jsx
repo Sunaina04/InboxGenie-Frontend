@@ -29,7 +29,7 @@ const EmailDetail = () => {
 
   const handleAIResponse = () => {
     setLoading(true);
-    aiResponseStore.fetchAIResponse(email.body).then(() => {
+    aiResponseStore.fetchAIResponse(email.to, email.from, email.subject, email.body).then(() => {
       setAIResponse(aiResponseStore.aiResponse);
       setOpenDialog(true);
       setLoading(false);
@@ -40,19 +40,22 @@ const EmailDetail = () => {
     setOpenDialog(false);
     setAIResponse("");
   };
-  
+
   const handleSendEmail = () => {
+    console.log(email);
+    setLoading(true);
     if (!email) {
       toast.error("No email selected.");
       return;
     }
   
     emailStore.sendEmail({
-      from: email.from, 
-      to: email.sender,
+      to: email.from,
+      from: email.to,
       subject: `Re: ${email.subject}`,
       body: aiResponse,
     });
+    setLoading(false);
   };
 
   return (

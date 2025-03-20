@@ -17,7 +17,7 @@ class AIResponseStore {
     });
   }
 
-  fetchAIResponse = async (emailBody) => {
+  fetchAIResponse = async (to, from, subject, emailBody) => {
     runInAction(() => {
       this.isLoading = true;
       this.error = null;
@@ -25,6 +25,9 @@ class AIResponseStore {
 
     try {
       const response = await axios.post("/generate-reply/", {
+        to: to,
+        from: from,
+        subject: subject,
         email_body: emailBody,
       });
       if (response.status === 200 && response.data.body) {
