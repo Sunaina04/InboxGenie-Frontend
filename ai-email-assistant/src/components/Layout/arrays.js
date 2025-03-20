@@ -1,3 +1,4 @@
+import { SendOutlined } from "@mui/icons-material";
 import { privatePaths } from "../../config/routes";
 import InboxIcon from "@mui/icons-material/Inbox";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -24,13 +25,13 @@ export const menuOptions = () => [
     componentTitle: "Inbox - View Emails",
     path: privatePaths.inbox,
   },
-  // {
-  //   id: "aiResponses",
-  //   menuTitle: "AI Responses",
-  //   path: privatePaths.aiResponses, // Define this path in your routes
-  //   // icon: <MailOutlineIcon />, // Use MUI icon for AI Responses
-  //   componentTitle: "AI Responses - Generated Replies",
-  // },
+  {
+    id: "sentMails",
+    menuTitle: "Sent",
+    path: privatePaths.sent,
+    icon: <SendOutlined />,
+    componentTitle: "Sent Items",
+  },
   // {
   //   id: "compose",
   //   menuTitle: "Compose",
