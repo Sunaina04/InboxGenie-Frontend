@@ -7,6 +7,8 @@ import AIResponseDialog from "../aiResponseDialog";
 import aiResponseStore from "../../stores/aiResponseStore";
 import EmailFilter from "../emailFilter";
 import EmailCard from "../emailCard";
+import emailStore from "../../stores/emailStore";
+import toast from "react-hot-toast";
 
 const EmailDetail = () => {
   const location = useLocation();
@@ -37,6 +39,20 @@ const EmailDetail = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setAIResponse("");
+  };
+  
+  const handleSendEmail = () => {
+    if (!email) {
+      toast.error("No email selected.");
+      return;
+    }
+  
+    emailStore.sendEmail({
+      from: email.from, 
+      to: email.sender,
+      subject: `Re: ${email.subject}`,
+      body: aiResponse,
+    });
   };
 
   return (
@@ -99,7 +115,7 @@ const EmailDetail = () => {
         aiResponse={aiResponse}
         handleApprove={() => alert("Approved")}
         handleEdit={() => alert("Edit")}
-        handleSend={() => alert("Sent")}
+        handleSend={handleSendEmail}
       />
     </Container>
   );
