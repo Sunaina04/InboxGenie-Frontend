@@ -27,10 +27,9 @@ class AIResponseStore {
       const response = await axios.post("/generate-reply/", {
         email_body: emailBody,
       });
-
-      if (response.status === 200 && response.data.ai_response) {
+      if (response.status === 200 && response.data.body) {
         runInAction(() => {
-          this.aiResponse = response.data.ai_response;
+          this.aiResponse = response.data.body;
         });
       } else {
         throw new Error("Failed to generate AI response");
@@ -39,6 +38,7 @@ class AIResponseStore {
       runInAction(() => {
         this.error = error.message;
       });
+      console.log("Error", error);
       toast.error("Error generating AI response");
     } finally {
       runInAction(() => {
