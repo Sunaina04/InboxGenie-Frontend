@@ -29,11 +29,13 @@ const EmailDetail = () => {
 
   const handleAIResponse = () => {
     setLoading(true);
-    aiResponseStore.fetchAIResponse(email.to, email.from, email.subject, email.body).then(() => {
-      setAIResponse(aiResponseStore.aiResponse);
-      setOpenDialog(true);
-      setLoading(false);
-    });
+    aiResponseStore
+      .fetchAIResponse(email.to, email.from, email.subject, email.body)
+      .then(() => {
+        setAIResponse(aiResponseStore.aiResponse);
+        setOpenDialog(true);
+        setLoading(false);
+      });
   };
 
   const handleCloseDialog = () => {
@@ -42,13 +44,12 @@ const EmailDetail = () => {
   };
 
   const handleSendEmail = () => {
-    console.log(email);
     setLoading(true);
     if (!email) {
       toast.error("No email selected.");
       return;
     }
-  
+
     emailStore.sendEmail({
       to: email.from,
       from: email.to,
@@ -66,7 +67,7 @@ const EmailDetail = () => {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           {/* Back Button */}
           <Button
-            variant="text"
+            variant="contained"
             color="primary"
             startIcon={<ArrowBack />}
             onClick={() => navigate("/inbox")}
@@ -76,9 +77,9 @@ const EmailDetail = () => {
           <EmailFilter filter={filter} setFilter={setFilter} />
 
           <Box sx={{ flexGrow: 1, padding: 4 }}>
-            <Typography variant="h4" color="primary" gutterBottom>
+            {/* <Typography variant="h4" color="primary" gutterBottom>
               Emails
-            </Typography>
+            </Typography> */}
             <Box
               sx={{
                 display: "grid",
@@ -96,6 +97,8 @@ const EmailDetail = () => {
                   key={email.id}
                   email={email}
                   handleAIResponse={handleAIResponse}
+                  handleReply={handleAIResponse}
+                  handleSendEmail={handleSendEmail}
                 />
               ) : (
                 <Typography
@@ -114,6 +117,7 @@ const EmailDetail = () => {
       {/* AI Response Dialog */}
       <AIResponseDialog
         open={openDialog}
+        email={email}
         handleClose={handleCloseDialog}
         aiResponse={aiResponse}
         handleApprove={() => alert("Approved")}

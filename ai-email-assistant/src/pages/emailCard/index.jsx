@@ -1,10 +1,44 @@
-import React from "react";
-import { Box, Paper, Typography, Button, Chip } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Paper,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import { ArrowForward, Reply, Forward } from "@mui/icons-material";
+import ReplySection from "../replySection";
+import aiResponseStore from "../../stores/aiResponseStore";
 
-const EmailCard = ({ email, handleAIResponse, handleReply, handleForward }) => {
-  const getUrgencyLevel = (emailBody) =>
-    emailBody.includes("urgent") ? "High" : "Low";
+const EmailCard = ({
+  email,
+  handleAIResponse,
+  handleReply,
+  handleForward,
+  handleSendEmail,
+}) => {
+  const [showReplyBox, setShowReplyBox] = useState(false);
+  const [aiResponse, setAIResponse] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const generateAIResponse = () => {
+    setLoading(true);
+    aiResponseStore
+      .fetchAIResponse(email.to, email.from, email.subject, email.body)
+      .then(() => {
+        setAIResponse(aiResponseStore.aiResponse);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.error("Error fetching AI response:", error);
+      });
+  };
+
+  const handleSendReply = (message) => {
+    console.log("Reply sent:", message);
+    setShowReplyBox(false);
+  };
 
   return (
     <Paper
@@ -12,26 +46,14 @@ const EmailCard = ({ email, handleAIResponse, handleReply, handleForward }) => {
         padding: 3,
         borderRadius: 2,
         backgroundColor: "#ffffff",
-        boxShadow: 2,
+        boxShadow: 4,
         mb: 3,
-        // width: "auto",
-        // maxWidth: "auto",
-        // minHeight: "600px",
-        // height: "auto",
-        "&:hover": {
-          boxShadow: 6,
-        },
+        "&:hover": { boxShadow: 8 },
       }}
     >
-      <Typography
-        variant="h6"
-        color="primary"
-        fontWeight={600}
-        sx={{ marginBottom: 1 }}
-      >
+      <Typography variant="h5" color="primary" fontWeight={700}>
         {email.subject || "No Subject"}
       </Typography>
-
       <Box display="flex" justifyContent="space-between" my={1}>
         <Typography variant="body2" color="textSecondary">
           <strong>From:</strong> {email.from}
@@ -40,62 +62,39 @@ const EmailCard = ({ email, handleAIResponse, handleReply, handleForward }) => {
           {new Date(email.date).toLocaleString()}
         </Typography>
       </Box>
-
-      <Box display="flex" justifyContent="space-between" my={1}>
-        <Chip
-          label={getUrgencyLevel(email.body)}
-          color={getUrgencyLevel(email.body) === "High" ? "error" : "primary"}
-          size="small"
-          sx={{
-            fontWeight: 600,
-            textTransform: "uppercase",
-            height: 24,
-          }}
-        />
-      </Box>
-
       <Typography
         variant="body2"
         color="textSecondary"
         sx={{
           whiteSpace: "pre-line",
           color: "#333",
-          marginBottom: 3,
+          mb: 3,
           lineHeight: 1.6,
+          maxHeight: "200px",
+          overflowY: "auto",
         }}
       >
-        {email.body.slice(0, 200) + (email.body.length > 200 ? "..." : "")}
+        {email.body}
       </Typography>
 
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        sx={{ marginTop: "20rem" }}
-      >
+      <Box display="flex" justifyContent="space-between">
         <Button
           variant="contained"
           color="primary"
           onClick={() => handleAIResponse(email)}
-          sx={{
-            textTransform: "none",
-            paddingX: 4,
-            fontWeight: 600,
-            borderRadius: 2,
-            backgroundColor: "#1e88e5",
-            "&:hover": {
-              backgroundColor: "#1976d2",
-            },
-          }}
+          sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
           endIcon={<ArrowForward />}
         >
           Generate Response
         </Button>
-
         <Box display="flex" alignItems="center">
           <Button
             variant="outlined"
             color="primary"
-            onClick={() => handleReply(email)}
+            onClick={() => {
+              generateAIResponse();
+              setShowReplyBox(!showReplyBox);
+            }}
             sx={{
               textTransform: "none",
               marginLeft: 1,
@@ -106,7 +105,6 @@ const EmailCard = ({ email, handleAIResponse, handleReply, handleForward }) => {
           >
             Reply
           </Button>
-
           <Button
             variant="outlined"
             color="primary"
@@ -123,6 +121,23 @@ const EmailCard = ({ email, handleAIResponse, handleReply, handleForward }) => {
           </Button>
         </Box>
       </Box>
+
+      {loading && (
+        <CircularProgress
+          size={24}
+          sx={{ position: "absolute", top: "50%", left: "50%" }}
+        />
+      )}
+
+      {showReplyBox && (
+        <ReplySection
+          email={email}
+          handleSendReply={handleSendReply}
+          handleCancel={() => setShowReplyBox(false)}
+          aiResponse={aiResponse}
+          handleSendEmail={handleSendEmail}
+        />
+      )}
     </Paper>
   );
 };

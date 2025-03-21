@@ -8,24 +8,27 @@ import {
   IconButton,
   Typography,
   Box,
-  TextField,
   TextareaAutosize,
 } from "@mui/material";
-import { Close, CheckCircle, Edit, Send } from "@mui/icons-material";
+import { Close, Edit, Send } from "@mui/icons-material";
+import emailStore from "../../stores/emailStore";
+import toast from "react-hot-toast";
 
 const AIResponseDialog = ({
   open,
+  email,
   handleClose,
   aiResponse,
   handleApprove,
-  handleSend,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedResponse, setEditedResponse] = useState(aiResponse);
+  const [loading, setLoading] = useState(false);
 
-  // Set editedResponse to aiResponse when dialog opens or aiResponse changes
   useEffect(() => {
+    // Reset editedResponse whenever aiResponse or open prop changes
     setEditedResponse(aiResponse);
+    setLoading(false); // Reset loading when dialog opens
   }, [aiResponse, open]);
 
   const handleEdit = () => {
@@ -33,8 +36,38 @@ const AIResponseDialog = ({
   };
 
   const handleSave = () => {
-    handleApprove(editedResponse); // Send the edited response
-    setIsEditing(false);
+    handleApprove(editedResponse); // Save the edited response
+    setIsEditing(false); // Exit editing mode
+  };
+
+  const handleSendClick = () => {
+    setLoading(true);
+
+    if (!email) {
+      toast.error("No email selected.");
+      setLoading(false);
+      return;
+    }
+
+    const responseToSend = isEditing ? editedResponse : aiResponse;
+
+    emailStore
+      .sendEmail({
+        to: email.from,
+        from: email.to,
+        subject: email.subject,
+        body: responseToSend,
+      })
+      .then(() => {
+        toast.success("Email sent successfully!");
+        setLoading(false);
+        handleClose(); // Close dialog after email is sent
+      })
+      .catch((error) => {
+        toast.error("Failed to send email. Please try again.");
+        console.error("Error sending email:", error);
+        setLoading(false);
+      });
   };
 
   return (
@@ -207,9 +240,10 @@ const AIResponseDialog = ({
                 backgroundColor: "#1565c0",
               },
             }}
-            onClick={handleSend}
+            onClick={handleSendClick} // Send the edited response if it's being edited
+            disabled={loading} // Disable the Send button when loading
           >
-            Send
+            {loading ? "Sending..." : "Send"}
           </Button>
         </Box>
       </DialogActions>
