@@ -52,7 +52,7 @@ const EmailCard = ({
       }}
     >
       <Typography variant="h5" color="primary" fontWeight={700}>
-        {email.subject || "No Subject"}
+        Subject: {email.subject || "No Subject"}
       </Typography>
       <Box display="flex" justifyContent="space-between" my={1}>
         <Typography variant="body2" color="textSecondary">
@@ -105,7 +105,7 @@ const EmailCard = ({
           >
             Reply
           </Button>
-          <Button
+          {/* <Button
             variant="outlined"
             color="primary"
             onClick={() => handleForward(email)}
@@ -118,7 +118,7 @@ const EmailCard = ({
             startIcon={<Forward />}
           >
             Forward
-          </Button>
+          </Button> */}
         </Box>
       </Box>
 

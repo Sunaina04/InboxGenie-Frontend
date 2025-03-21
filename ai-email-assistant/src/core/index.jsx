@@ -8,7 +8,6 @@ import PublicRoute from "./PublicRoute";
 
 const LoginPage = lazy(() => import("../pages/login"));
 
-const Dashboard = lazy(() => import("../pages/dashboard"));
 const Inbox = lazy(() => import("../pages/inbox"));
 const EmailDetail = lazy(() => import("../pages/emailDetail"));
 const SentMails = lazy(() => import("../pages/SentMails"));
@@ -16,10 +15,6 @@ const SentMails = lazy(() => import("../pages/SentMails"));
 const publicRoutes = [{ path: publicPaths.login, Component: <LoginPage /> }];
 
 const privateRoutes = [
-  // {
-  //   path: privatePaths.dashbaord,
-  //   Component: <Dashboard />,
-  // },
   {
     path: privatePaths.inbox,
     Component: <Inbox />,

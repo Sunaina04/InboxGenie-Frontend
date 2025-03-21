@@ -3,15 +3,14 @@ import { Box, Typography, Checkbox, ListItem, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
-  // Function to clean up the sender's name and email address
   const getSenderName = (sender) => {
-    const match = sender.match(/(.*)<(.*)>/); // Matches "Name <email>"
-    return match ? match[1].trim() : sender; // Extracts the name if available
+    const match = sender.match(/(.*)<(.*)>/);
+    return match ? match[1].trim() : sender;
   };
 
   const getSenderEmail = (sender) => {
-    const match = sender.match(/(.*)<(.*)>/); // Matches "Name <email>"
-    return match ? match[2].trim() : ""; // Extracts the email address if available
+    const match = sender.match(/(.*)<(.*)>/);
+    return match ? match[2].trim() : "";
   };
 
   return (
@@ -25,13 +24,11 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
         alignItems: "center",
         justifyContent: "space-between",
         "&:hover": {
-          backgroundColor: "#f5f5f5", // Highlight on hover
+          backgroundColor: "#f5f5f5",
         },
       }}
     >
-      {/* Left Section (Checkbox + Sender) */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        {/* Checkbox */}
         <Checkbox
           checked={email.isSelected}
           onChange={() => onSelect(email.id)}
@@ -41,12 +38,11 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
               color: "#007aff",
             },
             "&:hover": {
-              backgroundColor: "transparent", // Avoid background color change on hover
+              backgroundColor: "transparent",
             },
           }}
         />
 
-        {/* Sender Info */}
         <Box>
           <Typography
             variant="body1"
@@ -68,7 +64,6 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
             )}
           </Typography>
 
-          {/* Email Snippet */}
           <Typography
             variant="body2"
             sx={{ color: "#5f6368", fontSize: "14px" }}
@@ -78,21 +73,18 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
         </Box>
       </Box>
 
-      {/* Right Section (Timestamp + Delete Icon) */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        {/* Timestamp */}
         <Typography variant="caption" sx={{ color: "#5f6368" }}>
           {email.timestamp}
         </Typography>
 
-        {/* Delete Icon */}
         <IconButton
           edge="end"
           color="error"
           onClick={() => onDelete(email.id)}
           sx={{
             "&:hover": {
-              backgroundColor: "transparent", // No background color change on hover
+              backgroundColor: "transparent",
             },
           }}
         >

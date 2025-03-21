@@ -8,7 +8,7 @@ import {
   List,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
-import SentMailItem from "../sentMailItem";
+import SentMailItem from "./components/sentMailItem";
 
 const sentEmailsData = [
   {
