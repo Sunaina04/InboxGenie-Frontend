@@ -27,6 +27,10 @@ const privateRoutes = [
     path: privatePaths.sent,
     Component: <SentMails />,
   },
+  {
+    path: privatePaths.sentEmail,
+    Component: <EmailDetail />,
+  },
 ];
 
 const App = () => {

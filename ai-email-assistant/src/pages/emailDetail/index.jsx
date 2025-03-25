@@ -25,11 +25,14 @@ const EmailDetail = () => {
   const [aiResponse, setAIResponse] = useState("");
   const [filter, setFilter] = useState("All");
 
+  const isInbox = location.pathname.includes("inbox");
+  const backPath = isInbox ? "/inbox" : "/sent";
+
   useEffect(() => {
     if (!email) {
-      navigate("/inbox");
+      navigate(backPath);
     }
-  }, [email, navigate]);
+  }, [email, navigate, backPath]);
 
   const handleAIResponse = () => {
     setLoading(true);
@@ -71,9 +74,9 @@ const EmailDetail = () => {
           variant="contained"
           color="primary"
           startIcon={<ArrowBack />}
-          onClick={() => navigate("/inbox")}
+          onClick={() => navigate(backPath)}
         >
-          Back to Inbox
+          {isInbox ? "Back to Inbox" : "Back to Sent Mails"}
         </Button>
         <EmailFilter filter={filter} setFilter={setFilter} />
 
@@ -92,8 +95,8 @@ const EmailDetail = () => {
               <EmailCard
                 key={email.id}
                 email={email}
-                handleAIResponse={handleAIResponse}
-                handleReply={handleAIResponse}
+                handleAIResponse={isInbox ? handleAIResponse : null}
+                handleReply={isInbox ? handleAIResponse : null}
                 handleSendEmail={handleSendEmail}
               />
             ) : (

@@ -1,48 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
   Divider,
   Typography,
   Button,
+  Pagination,
   List,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
-import SentMailItem from "./components/sentMailItem";
-
-const sentEmailsData = [
-  {
-    id: 1,
-    sender: "business@example.com",
-    recipients: ["john.doe@example.com"],
-    subject: "Meeting Scheduled",
-    snippet: "We have a meeting scheduled for tomorrow at 2 PM.",
-    timestamp: "1 hour ago",
-    isSelected: false,
-  },
-  {
-    id: 2,
-    sender: "business@example.com",
-    recipients: ["alice.smith@example.com"],
-    subject: "Project Update",
-    snippet: "Here's an update on the current project progress.",
-    timestamp: "3 hours ago",
-    isSelected: false,
-  },
-  {
-    id: 3,
-    sender: "business@example.com",
-    recipients: ["bob.jones@example.com"],
-    subject: "Invoice #12345",
-    snippet: "Attached is your invoice for this month's services.",
-    timestamp: "1 day ago",
-    isSelected: false,
-  },
-];
+import EmailItem from "../emailItem";
+import authStore from "../../stores/authStore";
 
 const SentMails = () => {
-  const [sentEmails, setSentEmails] = useState(sentEmailsData);
+  const [sentEmails, setSentEmails] = useState([]);
   const [selectedEmails, setSelectedEmails] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [emailsPerPage] = useState(5);
+  const navigate = useNavigate();
 
   const handleSelectEmail = (emailId) => {
     const updatedEmails = sentEmails.map((email) =>
@@ -63,6 +39,25 @@ const SentMails = () => {
     setSelectedEmails([]);
   };
 
+  const handleEmailClick = (emailId) => {
+    const clickedEmail = sentEmails.find((email) => email.id === emailId);
+    console.log("clicked email", clickedEmail);
+    navigate(`/sent_email/${clickedEmail.id}`, { state: clickedEmail });
+  };
+
+   useEffect(() => {
+      authStore.fetchSentEmails();
+      const fetchedSentEmails = JSON.parse(localStorage.getItem("sentEmails")) || [];
+      setSentEmails(fetchedSentEmails);
+    }, [])
+    
+  const indexOfLastEmail = currentPage * emailsPerPage;
+  const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
+  const currentEmails = sentEmails.slice(indexOfFirstEmail, indexOfLastEmail);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
   return (
     <Box
       sx={{
@@ -111,15 +106,23 @@ const SentMails = () => {
 
         {/* Sent Emails List */}
         <List sx={{ padding: 0 }}>
-          {sentEmails.map((email) => (
-            <SentMailItem
+          {currentEmails.map((email) => (
+            <EmailItem
               key={email.id}
               email={email}
               onSelect={handleSelectEmail}
+              onClick={() => handleEmailClick(email.id)}
               onDelete={handleDeleteEmail}
             />
           ))}
         </List>
+        <Pagination
+          count={Math.ceil(sentEmails.length / emailsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ marginTop: "16px", display: "flex", justifyContent: "center" }}
+        />
       </Container>
     </Box>
   );

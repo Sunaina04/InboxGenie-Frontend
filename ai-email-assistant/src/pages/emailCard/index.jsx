@@ -78,6 +78,7 @@ const EmailCard = ({
       </Typography>
 
       <Box display="flex" justifyContent="space-between">
+      {handleAIResponse && (
         <Button
           variant="contained"
           color="primary"
@@ -87,24 +88,27 @@ const EmailCard = ({
         >
           Generate Response
         </Button>
+      )}
         <Box display="flex" alignItems="center">
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              generateAIResponse();
-              setShowReplyBox(!showReplyBox);
-            }}
-            sx={{
-              textTransform: "none",
-              marginLeft: 1,
-              fontWeight: 600,
-              borderRadius: 2,
-            }}
-            startIcon={<Reply />}
-          >
-            Reply
-          </Button>
+          {handleReply && (
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => {
+                generateAIResponse();
+                setShowReplyBox(!showReplyBox);
+              }}
+              sx={{
+                textTransform: "none",
+                marginLeft: 1,
+                fontWeight: 600,
+                borderRadius: 2,
+              }}
+              startIcon={<Reply />}
+            >
+              Reply
+            </Button>
+          )}
           {/* <Button
             variant="outlined"
             color="primary"

@@ -90,6 +90,31 @@ class AuthStore {
     }
   };
 
+  fetchSentEmails = async () => {
+    runInAction(() => {
+      this.isLoadingEmails = true;
+    });
+    try {
+      const response = await axios.get("/sent_mails/");
+      runInAction(() => {
+        if (response.status === 200) {
+          this.emails = response.data.sent_emails;
+          localStorage.setItem("sentEmails", JSON.stringify(response.data.sent_emails));
+          toast.success("Sent emails fetched successfully!");
+        } else {
+          toast.error("Failed to fetch sent emails.");
+        }
+      });
+    } catch (error) {
+      toast.error("Failed to fetch sent emails.");
+      console.error("Error fetching sent emails:", error);
+    } finally {
+      runInAction(() => {
+        this.isLoadingEmails = false;
+      });
+    }
+  };
+  
   googleLogin = () => {
     console.log(googleClientId);
     console.log(redirectUri);

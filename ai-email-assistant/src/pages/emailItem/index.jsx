@@ -16,7 +16,7 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
   return (
     <ListItem
       button
-      onClick={onClick}
+      onClick={() => onClick(email.id)}
       sx={{
         padding: "12px 16px",
         borderBottom: "1px solid #e0e0e0",

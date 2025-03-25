@@ -4,6 +4,8 @@ export const privatePaths = {
   inbox: "/inbox",
   email: "/email/:id",
   sent: "/sent",
+  sentEmail: "/sent_email/:id",
+  
 
   // admin: {
   //   dashbaord: "/main-page",
