@@ -23,7 +23,6 @@ const EmailDetail = () => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
-  const [filter, setFilter] = useState("All");
   const isInbox = location.pathname.includes("sent_email");
   const backPath = isInbox ? "/sent" : "/inbox";
 
@@ -77,7 +76,6 @@ const EmailDetail = () => {
         >
           {!isInbox ? "Back to Inbox" : "Back to Sent Mails"}
         </Button>
-        <EmailFilter filter={filter} setFilter={setFilter} />
 
         <Box sx={{ flexGrow: 1, padding: 4 }}>
           <Box
