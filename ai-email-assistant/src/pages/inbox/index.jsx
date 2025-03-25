@@ -8,6 +8,8 @@ import {
   List,
   Pagination,
   Grid,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { Delete, MarkEmailRead } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +17,7 @@ import authStore from "../../stores/authStore";
 import aiResponseStore from "../../stores/aiResponseStore";
 import EmailItem from "../emailItem";
 import EmailFilter from "../emailDetail/components/emailFilter";
-import AutoReplyButton from "./components/AutoReplyButton"; // New Component for Auto Reply
+import AutoReplyButton from "./components/AutoReplyButton";
 
 const Inbox = () => {
   const [emails, setEmails] = useState([]);
@@ -24,13 +26,16 @@ const Inbox = () => {
   const [filter, setFilter] = useState("All");
   const [emailsPerPage] = useState(5);
   const [isAutoReplyEnabled, setIsAutoReplyEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setIsLoading(true);
     authStore.fetchEmails({ inquire: isAutoReplyEnabled });
     const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
     setEmails(fetchedEmails);
-  }, []);
+    setIsLoading(false);
+  }, [isAutoReplyEnabled]);
 
   const handleSelectEmail = (emailId) => {
     const updatedEmails = emails.map((email) =>
@@ -72,6 +77,18 @@ const Inbox = () => {
     }
   };
 
+  const handleAutoReply = async () => {
+    setIsLoading(true);
+    try {
+      await aiResponseStore.triggerAutoReply();
+      setIsLoading(false);
+      setFilter("All");
+      setIsAutoReplyEnabled(false);
+    } catch (error) {
+      console.error("Error sending auto-reply:", error);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -95,9 +112,7 @@ const Inbox = () => {
             >
               Inbox
             </Typography>
-
             <Divider sx={{ marginBottom: "16px", borderColor: "#e0e0e0" }} />
-
             <Box
               display="flex"
               justifyContent="flex-start"
@@ -116,9 +131,7 @@ const Inbox = () => {
                   borderRadius: "24px",
                   borderColor: "#007aff",
                   color: "#007aff",
-                  "&:hover": {
-                    borderColor: "#0062cc",
-                  },
+                  "&:hover": { borderColor: "#0062cc" },
                 }}
               >
                 Mark as Read
@@ -136,15 +149,12 @@ const Inbox = () => {
                   borderRadius: "24px",
                   borderColor: "#d32f2f",
                   color: "#d32f2f",
-                  "&:hover": {
-                    borderColor: "#c62828",
-                  },
+                  "&:hover": { borderColor: "#c62828" },
                 }}
               >
                 Delete
               </Button>
             </Box>
-
             <List sx={{ padding: 0 }}>
               {currentEmails?.map((email) => (
                 <EmailItem
@@ -155,7 +165,6 @@ const Inbox = () => {
                 />
               ))}
             </List>
-
             <Pagination
               count={Math.ceil(emails.length / emailsPerPage)}
               page={currentPage}
@@ -168,14 +177,21 @@ const Inbox = () => {
               }}
             />
           </Grid>
-
           <Grid item xs={12} md={3}>
             <EmailFilter filter={filter} setFilter={handleFilterChange} />
-
-            <AutoReplyButton isEnabled={isAutoReplyEnabled} />
+            <AutoReplyButton
+              isEnabled={isAutoReplyEnabled}
+              onClick={handleAutoReply}
+            />
           </Grid>
         </Grid>
       </Container>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 };
