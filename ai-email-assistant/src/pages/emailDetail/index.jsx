@@ -24,9 +24,8 @@ const EmailDetail = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
   const [filter, setFilter] = useState("All");
-
-  const isInbox = location.pathname.includes("inbox");
-  const backPath = isInbox ? "/inbox" : "/sent";
+  const isInbox = location.pathname.includes("sent_email");
+  const backPath = isInbox ? "/sent" : "/inbox";
 
   useEffect(() => {
     if (!email) {
@@ -76,7 +75,7 @@ const EmailDetail = () => {
           startIcon={<ArrowBack />}
           onClick={() => navigate(backPath)}
         >
-          {isInbox ? "Back to Inbox" : "Back to Sent Mails"}
+          {!isInbox ? "Back to Inbox" : "Back to Sent Mails"}
         </Button>
         <EmailFilter filter={filter} setFilter={setFilter} />
 
@@ -95,8 +94,8 @@ const EmailDetail = () => {
               <EmailCard
                 key={email.id}
                 email={email}
-                handleAIResponse={isInbox ? handleAIResponse : null}
-                handleReply={isInbox ? handleAIResponse : null}
+                handleAIResponse={!isInbox ? handleAIResponse : null}
+                handleReply={!isInbox ? handleAIResponse : null}
                 handleSendEmail={handleSendEmail}
               />
             ) : (

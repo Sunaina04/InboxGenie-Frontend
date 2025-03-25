@@ -20,7 +20,6 @@ const Login = () => {
     e.preventDefault();
     navigate("/inbox");
   };
-  console.log("emails", emails);
 
   const handleGoogleLogin = () => {
     signInWithGoogle()
@@ -28,7 +27,6 @@ const Login = () => {
         try {
           await authStore.fetchEmails();
           setEmails(authStore.emails);
-          console.log("emails", emails);
           navigate("/inbox");
         } catch (error) {
           console.error("Error during fetching emails:", error);
@@ -97,84 +95,3 @@ const Login = () => {
 };
 
 export default Login;
-
-// import { useState, useEffect } from "react";
-// import { useNavigate, useLocation } from "react-router-dom";
-// import { FcGoogle } from "react-icons/fc";
-// import "./login.css";
-// import authStore from "../../stores/authStore";
-
-// const Login = () => {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const navigate = useNavigate();
-//   const location = useLocation();
-
-//   // Check if the URL contains a Google callback code
-//   useEffect(() => {
-//     const urlParams = new URLSearchParams(location.search);
-//     const code = urlParams.get("code");
-
-//     if (code) {
-//       // If a code is present in the URL, handle the callback
-//       authStore.handleGoogleCallback(code);
-//     }
-//   }, [location]);
-
-//   const handleLogin = (e) => {
-//     e.preventDefault();
-//     navigate("/dashboard");
-//   };
-
-//   const handleGoogleLogin = () => {
-//     // Trigger Google OAuth flow by redirecting to the authentication URL
-//     authStore.googleLogin();
-//   };
-
-//   return (
-//     <div className="login-container">
-//       <div className="login-box">
-//         <h2 className="login-heading">Welcome Back to InboxGenie!</h2>
-//         <p className="login-subheading">Please log in to continue</p>
-//         <form onSubmit={handleLogin}>
-//           <div className="input-group">
-//             <input
-//               type="email"
-//               placeholder="Email Address"
-//               className="input-field"
-//               value={email}
-//               onChange={(e) => setEmail(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <div className="input-group">
-//             <input
-//               type="password"
-//               placeholder="Password"
-//               className="input-field"
-//               value={password}
-//               onChange={(e) => setPassword(e.target.value)}
-//               required
-//             />
-//           </div>
-//           <button type="submit" className="login-btn">
-//             Log In
-//           </button>
-//         </form>
-//         <div className="divider">
-//           <hr className="divider-line" />
-//           <span className="divider-text">OR</span>
-//           <hr className="divider-line" />
-//         </div>
-//         <button className="google-btn" onClick={handleGoogleLogin}>
-//           <FcGoogle size={24} /> Sign in with Google
-//         </button>
-//         <p className="forgot-password">
-//           <a href="/forgot-password">Forgot your password?</a>
-//         </p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Login;

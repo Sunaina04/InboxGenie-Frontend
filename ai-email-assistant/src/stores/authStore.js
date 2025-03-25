@@ -73,7 +73,7 @@ class AuthStore {
       const response = await axios.get("/emails/");
       runInAction(() => {
         if (response.status === 200) {
-          this.emails = response.data.emails;
+          this.emails = JSON.stringify(response.data.emails);
           localStorage.setItem("email", JSON.stringify(response.data.emails));
         } else {
           toast.error("Failed to fetch emails.");
