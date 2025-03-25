@@ -10,10 +10,12 @@ import {
   Grid,
 } from "@mui/material";
 import { Delete, MarkEmailRead } from "@mui/icons-material";
-import EmailItem from "../emailItem";
 import { useNavigate } from "react-router-dom";
 import authStore from "../../stores/authStore";
+import aiResponseStore from "../../stores/aiResponseStore";
+import EmailItem from "../emailItem";
 import EmailFilter from "../emailDetail/components/emailFilter";
+import AutoReplyButton from "./components/AutoReplyButton"; // New Component for Auto Reply
 
 const Inbox = () => {
   const [emails, setEmails] = useState([]);
@@ -23,6 +25,12 @@ const Inbox = () => {
   const [emailsPerPage] = useState(5);
   const [isAutoReplyEnabled, setIsAutoReplyEnabled] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    authStore.fetchEmails({ inquire: isAutoReplyEnabled });
+    const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
+    setEmails(fetchedEmails);
+  }, []);
 
   const handleSelectEmail = (emailId) => {
     const updatedEmails = emails.map((email) =>
@@ -47,15 +55,9 @@ const Inbox = () => {
     navigate(`/email/${clickedEmail.id}`, { state: clickedEmail });
   };
 
-  useEffect(() => {
-    authStore.fetchEmails();
-    const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
-    setEmails(fetchedEmails);
-  }, []);
-
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
-  const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
+  const currentEmails = emails?.slice(indexOfFirstEmail, indexOfLastEmail);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -144,7 +146,7 @@ const Inbox = () => {
             </Box>
 
             <List sx={{ padding: 0 }}>
-              {currentEmails.map((email) => (
+              {currentEmails?.map((email) => (
                 <EmailItem
                   key={email.id}
                   email={email}
@@ -170,24 +172,7 @@ const Inbox = () => {
           <Grid item xs={12} md={3}>
             <EmailFilter filter={filter} setFilter={handleFilterChange} />
 
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{
-                marginTop: "16px",
-                borderRadius: "24px",
-                fontWeight: 600,
-                fontSize: "14px",
-                width: "100%",
-                backgroundColor: "#007aff",
-                "&:hover": {
-                  backgroundColor: "#0062cc",
-                },
-              }}
-              disabled={!isAutoReplyEnabled}
-            >
-              Auto Reply
-            </Button>
+            <AutoReplyButton isEnabled={isAutoReplyEnabled} />
           </Grid>
         </Grid>
       </Container>

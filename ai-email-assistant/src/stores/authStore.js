@@ -65,12 +65,13 @@ class AuthStore {
       });
   };
 
-  fetchEmails = async () => {
+  fetchEmails = async (inquire = false) => {
     runInAction(() => {
       this.isLoadingEmails = true;
     });
     try {
-      const response = await axios.get("/emails/");
+      const params = inquire ? { inquire: true } : {};
+      const response = await axios.get("/emails/", { params });
       runInAction(() => {
         if (response.status === 200) {
           this.emails = JSON.stringify(response.data.emails);
@@ -81,7 +82,6 @@ class AuthStore {
       });
     } catch (error) {
       toast.error("Failed to fetch emails.");
-      console.log("here.......................");
       console.error("Error fetching emails:", error);
     } finally {
       runInAction(() => {
@@ -99,7 +99,10 @@ class AuthStore {
       runInAction(() => {
         if (response.status === 200) {
           this.emails = response.data.sent_emails;
-          localStorage.setItem("sentEmails", JSON.stringify(response.data.sent_emails));
+          localStorage.setItem(
+            "sentEmails",
+            JSON.stringify(response.data.sent_emails)
+          );
           toast.success("Sent emails fetched successfully!");
         } else {
           toast.error("Failed to fetch sent emails.");
@@ -114,7 +117,7 @@ class AuthStore {
       });
     }
   };
-  
+
   googleLogin = () => {
     console.log(googleClientId);
     console.log(redirectUri);

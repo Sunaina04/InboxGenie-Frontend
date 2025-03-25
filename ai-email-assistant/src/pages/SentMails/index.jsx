@@ -45,12 +45,13 @@ const SentMails = () => {
     navigate(`/sent_email/${clickedEmail.id}`, { state: clickedEmail });
   };
 
-   useEffect(() => {
-      authStore.fetchSentEmails();
-      const fetchedSentEmails = JSON.parse(localStorage.getItem("sentEmails")) || [];
-      setSentEmails(fetchedSentEmails);
-    }, [])
-    
+  useEffect(() => {
+    authStore.fetchSentEmails();
+    const fetchedSentEmails =
+      JSON.parse(localStorage.getItem("sentEmails")) || [];
+    setSentEmails(fetchedSentEmails);
+  }, []);
+
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
   const currentEmails = sentEmails.slice(indexOfFirstEmail, indexOfLastEmail);
@@ -106,7 +107,7 @@ const SentMails = () => {
 
         {/* Sent Emails List */}
         <List sx={{ padding: 0 }}>
-          {currentEmails.map((email) => (
+          {currentEmails?.map((email) => (
             <EmailItem
               key={email.id}
               email={email}
