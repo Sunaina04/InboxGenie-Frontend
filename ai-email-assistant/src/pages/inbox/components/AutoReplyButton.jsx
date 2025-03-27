@@ -1,27 +1,13 @@
-import React, { useState } from "react";
-import { Button, CircularProgress } from "@mui/material";
-import aiResponseStore from "../../../stores/aiResponseStore";
+import React from "react";
+import { Button } from "@mui/material";
 
-const AutoReplyButton = ({ isEnabled }) => {
-  const [loading, setLoading] = useState(false);
-
-  const handleAutoReply = async () => {
-    if (isEnabled) {
-      setLoading(true);
-      try {
-        await aiResponseStore.triggerAutoReply(); // Trigger the auto-reply
-      } catch (error) {
-        console.error("Error triggering auto-reply:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
+const AutoReplyButton = ({ isEnabled, onClick }) => {
   return (
     <Button
       variant="contained"
       color="primary"
+      disabled={!isEnabled}
+      onClick={onClick}
       sx={{
         marginTop: "16px",
         borderRadius: "24px",
@@ -33,14 +19,8 @@ const AutoReplyButton = ({ isEnabled }) => {
           backgroundColor: "#0062cc",
         },
       }}
-      disabled={!isEnabled || loading}
-      onClick={handleAutoReply}
     >
-      {loading ? (
-        <CircularProgress size={24} sx={{ color: "#fff" }} />
-      ) : (
-        "Auto Reply"
-      )}
+      Auto Reply
     </Button>
   );
 };
