@@ -9,6 +9,45 @@ import {
 import { ArrowForward, Reply, Forward } from "@mui/icons-material";
 import ReplySection from "../replySection";
 import aiResponseStore from "../../stores/aiResponseStore";
+import { useLocation } from "react-router-dom";
+
+const getRelativeTime = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (diffInSeconds < 60) {
+    return 'just now';
+  }
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) {
+    return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
+  }
+
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) {
+    return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
+  }
+
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 7) {
+    return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+  }
+
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  if (diffInWeeks < 4) {
+    return `${diffInWeeks} week${diffInWeeks !== 1 ? 's' : ''} ago`;
+  }
+
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) {
+    return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
+  }
+
+  const diffInYears = Math.floor(diffInDays / 365);
+  return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
+};
 
 const EmailCard = ({
   email,
@@ -20,6 +59,8 @@ const EmailCard = ({
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const isSentMail = location.pathname === "/sent" || location.pathname.includes("/sent_email");
 
   const generateAIResponse = () => {
     setLoading(true);
@@ -56,10 +97,10 @@ const EmailCard = ({
       </Typography>
       <Box display="flex" justifyContent="space-between" my={1}>
         <Typography variant="body2" color="textSecondary">
-          <strong>From:</strong> {email.from}
+          <strong>{isSentMail ? "To:" : "From:"}</strong> {isSentMail ? email.to : email.from}
         </Typography>
         <Typography variant="body2" color="textSecondary">
-          {new Date(email.date).toLocaleString()}
+          {new Date(email.date).toLocaleString()} ({getRelativeTime(email.date)})
         </Typography>
       </Box>
       <Typography
