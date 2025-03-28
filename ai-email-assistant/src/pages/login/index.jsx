@@ -1,13 +1,15 @@
+//
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 import "./login.css";
 import authStore from "../../stores/authStore";
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [emails, setEmails] = useState("");
   const [password, setPassword] = useState("");
-  const [emails, setEmails] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,7 +28,6 @@ const Login = () => {
       .then(async () => {
         try {
           await authStore.fetchEmails();
-          setEmails(authStore.emails);
           navigate("/inbox");
         } catch (error) {
           console.error("Error during fetching emails:", error);
@@ -50,14 +51,23 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="login-box">
-        <h2 className="login-heading">Welcome Back to InboxGenie!</h2>
-        <p className="login-subheading">Please log in to continue</p>
+      <div className="left-section">
+        <img
+          src="/assets/images/illustration.png"
+          alt="Illustration"
+          className="illustration"
+        />
+      </div>
+      <div className="right-section">
+        <h2 className="login-heading">Sign in</h2>
+        <p className="welcome-text">
+          Welcome to <span className="highlight">InboxGenie</span>
+        </p>
         <form onSubmit={handleLogin}>
           <div className="input-group">
             <input
               type="email"
-              placeholder="Email Address"
+              placeholder="Enter your email"
               className="input-field"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -67,7 +77,7 @@ const Login = () => {
           <div className="input-group">
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               className="input-field"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -79,15 +89,18 @@ const Login = () => {
           </button>
         </form>
         <div className="divider">
-          <hr className="divider-line" />
-          <span className="divider-text">OR</span>
-          <hr className="divider-line" />
+          <span>OR</span>
         </div>
-        <button className="google-btn" onClick={handleGoogleLogin}>
-          <FcGoogle size={24} /> Sign in with Google
-        </button>
-        <p className="forgot-password">
-          <a href="/forgot-password">Forgot your password?</a>
+        <div className="social-login">
+          <button className="google-btn" onClick={handleGoogleLogin}>
+            <FcGoogle size={20} /> Sign in with Google
+          </button>
+          <button className="facebook-btn">
+            <FaFacebook size={20} />
+          </button>
+        </div>
+        <p className="signup-text">
+          Don’t have an account? <a href="/signup">Sign up</a>
         </p>
       </div>
     </div>
