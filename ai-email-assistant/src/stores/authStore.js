@@ -95,7 +95,7 @@ class AuthStore {
       this.isLoadingEmails = true;
     });
     try {
-      const response = await axios.get("/sent_mails/");
+      const response = await axios.get("/sent-mails/");
       runInAction(() => {
         if (response.status === 200) {
           this.emails = response.data.sent_emails;
@@ -125,10 +125,8 @@ class AuthStore {
       console.error("Google Client ID or Redirect URI is not defined.");
       return;
     }
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?response_type=code&client_id=${googleClientId}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly&state=yOjMAmenqR18QMnnKV6hiSqt1NrNvZ&access_type=offline&service=lso&o2v=1&ddm=1&flowName=GeneralOAuthFlow`;
-    window.location.href = googleAuthUrl;
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?response_type=code&client_id=${googleClientId}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly&state=yOjMAmenqR18QMnnKV6hiSqt1NrNvZ&access_type=offline&service=lso&o2v=1&ddm=1&flowName=GeneralOAuthFlow`;    window.location.href = googleAuthUrl;
   };
-
   handleGoogleCallback = async (code) => {
     try {
       const response = await axios.post("/auth/google-login", { code });
