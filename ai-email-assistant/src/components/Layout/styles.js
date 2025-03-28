@@ -44,7 +44,7 @@ export const getStyles = () => {
       },
       "&:hover": {
         maxWidth: "220px",
-        background: theme.palette.main.purpleDark,
+        background: theme.palette.main.mediumGrey,        
         h6: {
           opacity: 1,
         },
@@ -244,25 +244,35 @@ export const getMenuItemStyles = (active, disabled) => {
       width: "100%",
       gap: "1.2rem",
       alignItems: "center",
-      background: active ? theme.palette.main.active : "none",
+      background: active ? "rgba(0, 0, 0, 0.04)" : "transparent",
       padding: "12px 10px",
       borderRadius: "8px",
       cursor: "pointer",
-      margin: "0 auto",
-      transition: "background-color 0.3s ease, padding 0.2s",
+      margin: "8px auto",
+      transition: "all 0.3s ease",
+      boxShadow: active ? "0 2px 4px rgba(0, 0, 0, 0.1)" : "none",
       "&:hover": {
-        backgroundColor: theme.palette.main.active,
+        backgroundColor: "rgba(0, 0, 0, 0.04)",
         padding: "12px 20px",
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        "& svg": {
+          color: theme.palette.main.purple,
+        },
+        "& h6": {
+          color: theme.palette.main.purple,
+        }
       },
       "& svg": {
         width: "22px",
         height: "22px",
-        color: "#fff",
+        color: active ? theme.palette.main.purple : "#666",
+        transition: "color 0.3s ease",
       },
       "& h6": {
         fontSize: "14px",
         fontWeight: active ? 600 : 400,
-        color: active ? "#fff" : theme.palette.secondary.white,
+        color: active ? theme.palette.main.purple : "#666",
+        transition: "color 0.3s ease",
       },
     },
   };

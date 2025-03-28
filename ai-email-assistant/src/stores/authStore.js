@@ -29,6 +29,8 @@ class AuthStore {
       fetchEmails: action,
       googleLogin: action, // New action to handle Google login
       handleGoogleCallback: action, // To handle Google callback
+      fetchSentEmails: action,
+      deleteEmail: action,
     });
   }
 
@@ -115,6 +117,26 @@ class AuthStore {
       runInAction(() => {
         this.isLoadingEmails = false;
       });
+    }
+  };
+
+  deleteEmail = async (messageId) => {
+    try {
+      const response = await axios.delete(`/delete-email/${messageId}/`);
+      if (response.status === 200) {
+        // Update the emails list by removing the deleted email
+        const updatedEmails = this.emails.filter(email => email.id !== messageId);
+        runInAction(() => {
+          this.emails = updatedEmails;
+          localStorage.setItem("email", JSON.stringify(updatedEmails));
+        });
+        toast.success("Email deleted successfully!");
+      } else {
+        throw new Error("Failed to delete email");
+      }
+    } catch (error) {
+      console.error("Error deleting email:", error);
+      toast.error("Failed to delete email");
     }
   };
 

@@ -1,4 +1,4 @@
-import { SendOutlined, Settings } from "@mui/icons-material";
+import { SendOutlined, Settings, DraftsOutlined } from "@mui/icons-material";
 import { privatePaths } from "../../config/routes";
 import InboxIcon from "@mui/icons-material/Inbox";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
@@ -24,7 +24,7 @@ export const menuOptions = () => [
     id: "compose",
     menuTitle: "Drafts",
     path: privatePaths.compose, // Define this path in your routes
-    // icon: <CreateIcon />, // Use MUI icon for Compose
+    icon: <DraftsOutlined />, // Adding the DraftsOutlined icon
   },
   {
     id: "sentMails",

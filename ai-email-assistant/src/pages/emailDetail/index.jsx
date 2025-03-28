@@ -84,7 +84,7 @@ const EmailDetail = () => {
               gap: 3,
               gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
               padding: 2,
-              maxWidth: "1200px",
+              maxWidth: "100%",
               margin: "0 auto",
             }}
           >

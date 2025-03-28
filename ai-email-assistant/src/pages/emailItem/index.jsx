@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Checkbox, ListItem, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useLocation } from "react-router-dom";
+import authStore from "../../stores/authStore";
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -24,7 +25,7 @@ const formatDate = (dateString) => {
   }
 };
 
-const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
+const EmailItem = ({ email, onSelect, onClick }) => {
   const location = useLocation();
   const isSentMail = location.pathname === "/sent";
 
@@ -39,6 +40,15 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
   };
 
   const displayEmail = isSentMail ? email.to : email.from;
+
+  const handleDelete = async (e) => {
+    e.stopPropagation(); // Prevent triggering the onClick event of the ListItem
+    try {
+      await authStore.deleteEmail(email.id);
+    } catch (error) {
+      console.error("Error deleting email:", error);
+    }
+  };
 
   return (
     <ListItem
@@ -62,7 +72,7 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
           checked={email.isSelected}
           onChange={() => onSelect(email.id)}
           sx={{
-            color: "#007aff",
+            color: "#202124",
             "&.Mui-checked": {
               color: "#007aff",
             },
@@ -73,36 +83,36 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
         />
 
         <Box>
-          <Typography
-            variant="body1"
-            sx={{ 
-              fontWeight: email.is_read ? 400 : 600, 
-              color: "#202124", 
-              fontSize: "15px" 
-            }}
-          >
-            {getSenderName(displayEmail)}{" "}
-            {getSenderEmail(displayEmail) && (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Box sx={{ flex: 1, paddingRight: "16px" }}>
+              <Typography
+                variant="body1"
+                sx={{ 
+                  fontWeight: email.is_read ? 400 : 600, 
+                  color: "#202124", 
+                  fontSize: "15px",
+                  minWidth:"150px",
+                }}
+              >
+                {getSenderName(displayEmail)}
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", flexDirection: "column" }}>
               <Typography
                 variant="caption"
                 sx={{
                   color: "#5f6368",
-                  fontSize: "12px",
-                  fontWeight: 400,
-                  marginLeft: 1,
+                  fontSize: "14px",
+                  fontWeight: 500,      
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis"
                 }}
               >
-                &lt;{getSenderEmail(displayEmail)}&gt;
+                {email.subject}
               </Typography>
-            )}
-          </Typography>
-
-          <Typography
-            variant="body2"
-            sx={{ color: "#5f6368", fontSize: "14px" }}
-          >
-            {email.snippet}
-          </Typography>
+            </Box>
+          </Box>
         </Box>
       </Box>
 
@@ -114,7 +124,7 @@ const EmailItem = ({ email, onSelect, onClick, onDelete }) => {
         <IconButton
           edge="end"
           color="error"
-          onClick={() => onDelete(email.id)}
+          onClick={handleDelete}
           sx={{
             "&:hover": {
               backgroundColor: "transparent",
