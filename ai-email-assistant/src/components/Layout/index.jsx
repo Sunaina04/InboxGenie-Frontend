@@ -57,8 +57,8 @@ const Layout = ({ children }) => {
     }}>
       {/* Sidebar Navigation */}
       <Box className="sidebar" sx={{
-        padding: "20px",
-        margin: "20px",
+        padding: "16px",
+        margin: "18px",
         backgroundColor: "#fff",
         borderRadius: "16px",
         boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
@@ -247,7 +247,11 @@ const Layout = ({ children }) => {
             <Avatar src={user?.avatar} className="avatar" />
           </Box>
         </Box>
-        <Box className="content-body">{children}</Box>       
+
+        {/* Content Body with Scroll */}
+        <Box className="content-body">
+          {children}
+        </Box>
       </Box>
     </Box>
   );

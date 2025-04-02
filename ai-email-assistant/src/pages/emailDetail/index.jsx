@@ -66,42 +66,35 @@ const EmailDetail = () => {
   };
 
   return (
-    <Container sx={{ maxWidth: "900px", padding: 4 }}>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<ArrowBack />}
-          onClick={() => navigate(backPath)}
-        >
-          {!isInbox ? "Back to Inbox" : "Back to Sent Mails"}
-        </Button>
-
-        <Box sx={{ flexGrow: 1, padding: 4 }}>
-          <Box
-            sx={{
-              display: "grid",
-              gap: 3,
-              gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
-              padding: 2,
-              maxWidth: "100%",
-              margin: "0 auto",
-            }}
-          >
-            {email ? (
-              <EmailCard
-                key={email.id}
-                email={email}
-                handleAIResponse={!isInbox ? handleAIResponse : null}
-                handleReply={!isInbox ? handleAIResponse : null}
-                handleSendEmail={handleSendEmail}
-              />
-            ) : (
-              <Typography variant="body1" color="textSecondary" align="center">
-                No emails available.
-              </Typography>
-            )}
-          </Box>
+    <Container
+      sx={{
+        maxWidth: "100%",
+        padding: "24px 0",
+        width: "100%",
+        margin: 0,
+      }}
+    >
+      <Box sx={{ display: "flex" }}>
+        <Box sx={{
+          flex: 1,
+          width: "100%",
+          padding: "24px 0",
+          maxWidth: "100%",
+          margin: 0,
+        }}>
+          {email ? (
+            <EmailCard
+              key={email.id}
+              email={email}
+              handleAIResponse={!isInbox ? handleAIResponse : null}
+              handleReply={!isInbox ? handleAIResponse : null}
+              handleSendEmail={handleSendEmail}
+            />
+          ) : (
+            <Typography variant="body1" color="textSecondary" align="center">
+              No emails available.
+            </Typography>
+          )}
         </Box>
       </Box>
 
@@ -109,10 +102,6 @@ const EmailDetail = () => {
         <Box
           sx={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
             backgroundColor: "rgba(255, 255, 255, 0.6)",
             display: "flex",
             justifyContent: "center",

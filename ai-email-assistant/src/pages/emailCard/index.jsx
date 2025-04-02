@@ -1,59 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Paper,
   Typography,
   Button,
   CircularProgress,
+  Avatar,
+  Divider,
 } from "@mui/material";
-import { ArrowForward, Reply, Forward } from "@mui/icons-material";
+import { Reply } from "@mui/icons-material";
 import ReplySection from "../replySection";
 import aiResponseStore from "../../stores/aiResponseStore";
 import { useLocation } from "react-router-dom";
-
-const getRelativeTime = (dateString) => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
-
-  if (diffInSeconds < 60) {
-    return 'just now';
-  }
-
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} minute${diffInMinutes !== 1 ? 's' : ''} ago`;
-  }
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) {
-    return `${diffInHours} hour${diffInHours !== 1 ? 's' : ''} ago`;
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) {
-    return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
-  }
-
-  const diffInWeeks = Math.floor(diffInDays / 7);
-  if (diffInWeeks < 4) {
-    return `${diffInWeeks} week${diffInWeeks !== 1 ? 's' : ''} ago`;
-  }
-
-  const diffInMonths = Math.floor(diffInDays / 30);
-  if (diffInMonths < 12) {
-    return `${diffInMonths} month${diffInMonths !== 1 ? 's' : ''} ago`;
-  }
-
-  const diffInYears = Math.floor(diffInDays / 365);
-  return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
-};
 
 const EmailCard = ({
   email,
   handleAIResponse,
   handleReply,
-  handleForward,
   handleSendEmail,
 }) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
@@ -76,96 +39,178 @@ const EmailCard = ({
       });
   };
 
-  const handleSendReply = (message) => {
-    console.log("Reply sent:", message);
-    setShowReplyBox(false);
+  // Updated function to extract name and email
+  const getSenderInfo = (emailString) => {
+    if (!emailString) return { name: '', email: '' };
+    
+    // Remove angular brackets if present
+    const cleanEmail = emailString.replace(/[<>]/g, '');
+    
+    // Check if the email contains a name in the format "Name <email@example.com>"
+    const nameMatch = emailString.match(/"([^"]+)"\s*<(.+)>/);
+    if (nameMatch) {
+      return {
+        name: nameMatch[1],
+        email: nameMatch[2]
+      };
+    }
+
+    // Check for format "Name email@example.com"
+    const spaceMatch = cleanEmail.match(/^([^@\s]+)\s+([^@\s]+@[^@\s]+\.[^@\s]+)$/);
+    if (spaceMatch) {
+      return {
+        name: spaceMatch[1],
+        email: spaceMatch[2]
+      };
+    }
+    
+    // If no name found, return the email as both name and email
+    return {
+      name: cleanEmail,
+      email: cleanEmail
+    };
   };
+
+  // Get sender info based on path
+  const senderInfo = isSentMail ? getSenderInfo(email.to) : getSenderInfo(email.from);
+  const recipientInfo = isSentMail ? getSenderInfo(email.from) : getSenderInfo(email.to);
 
   return (
     <Paper
       sx={{
-        padding: 3,
-        borderRadius: 2,
+        padding: "24px",
+        borderRadius: "8px",
         backgroundColor: "#ffffff",
-        boxShadow: 4,
+        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         mb: 3,
-        "&:hover": { boxShadow: 8 },
+        width: "100%",
+        maxWidth: "100%",
+        mx: "auto",
       }}
     >
-      <Typography variant="h5" color="primary" fontWeight={700}>
-        Subject: {email.subject || "No Subject"}
-      </Typography>
-      <Box display="flex" justifyContent="space-between" my={1}>
-        <Typography variant="body2" color="textSecondary">
-          <strong>{isSentMail ? "To:" : "From:"}</strong> {isSentMail ? email.to : email.from}
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
-          {new Date(email.date).toLocaleString()} ({getRelativeTime(email.date)})
-        </Typography>
+      {/* Header Section */}
+      <Box display="flex" alignItems="center" mb={2}>
+        <Avatar
+          sx={{
+            width: 40,
+            height: 40,
+            bgcolor: "#554FEB",
+            marginRight: "16px",
+          }}
+        >
+          {senderInfo.name.charAt(0)}
+        </Avatar>
+        <Box flex={1}>
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography
+              variant="h6"
+              sx={{
+                fontSize: "14px",
+                fontWeight: 600,
+                color: "#333",
+              }}
+            >
+              {senderInfo.name}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#666",
+                fontSize: "14px",
+              }}
+            >
+              {new Date(email.date).toLocaleString()}
+            </Typography>
+          </Box>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#666",
+              fontSize: "14px",
+            }}
+          >
+            {senderInfo.email}
+          </Typography>
+        </Box>
       </Box>
+
+      {/* Subject */}
       <Typography
-        variant="body2"
-        color="textSecondary"
+        variant="h5"
         sx={{
-          whiteSpace: "pre-line",
+          fontSize: "16px",
+          fontWeight: 600,
           color: "#333",
-          mb: 3,
+          mb: 4,
+        }}
+      >
+        {email.subject || "No Subject"}
+      </Typography>
+
+      {/* Email Body */}
+      <Typography
+        variant="body1"
+        sx={{
+          color: "#444",
           lineHeight: 1.6,
-          maxHeight: "200px",
-          overflowY: "auto",
+          fontSize: "14px",
+          mt: 4,
+          mb: 6,
+          whiteSpace: "pre-line",
         }}
       >
         {email.body}
       </Typography>
 
-      <Box display="flex" justifyContent="space-between">
-      {handleAIResponse && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleAIResponse(email)}
-          sx={{ textTransform: "none", fontWeight: 600, borderRadius: 2 }}
-          endIcon={<ArrowForward />}
-        >
-          Generate Response
-        </Button>
-      )}
-        <Box display="flex" alignItems="center">
-          {handleReply && (
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => {
-                generateAIResponse();
-                setShowReplyBox(!showReplyBox);
-              }}
-              sx={{
-                textTransform: "none",
-                marginLeft: 1,
-                fontWeight: 600,
-                borderRadius: 2,
-              }}
-              startIcon={<Reply />}
-            >
-              Reply
-            </Button>
-          )}
-          {/* <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => handleForward(email)}
-            sx={{
-              textTransform: "none",
-              marginLeft: 1,
-              fontWeight: 600,
-              borderRadius: 2,
+      <Divider sx={{ my: 2 }} />
+
+      {/* Action Buttons - Only show for inbox emails */}
+      {!isSentMail && (
+        <Box display="flex" gap={2}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              generateAIResponse();
+              setShowReplyBox(!showReplyBox);
             }}
-            startIcon={<Forward />}
+            sx={{
+              backgroundColor: "#f5f5f5",
+              color: "#666",
+              textTransform: "none",
+              borderRadius: "8px",
+              padding: "4px 12px",
+              minWidth: "auto",
+              fontSize: "14px",
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
+            }}
+            startIcon={<Reply sx={{ color: "#666", fontSize: "18px" }} />}
           >
-            Forward
-          </Button> */}
+            Reply
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => handleAIResponse(email)}
+            sx={{
+              backgroundColor: "#f5f5f5",
+              color: "#666",
+              textTransform: "none",
+              borderRadius: "8px",
+              border: "none",
+              padding: "4px 12px",
+              minWidth: "auto",
+              fontSize: "14px",
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+                border: "none",
+              },
+            }}
+          >
+            Generate AI Response
+          </Button>
         </Box>
-      </Box>
+      )}
 
       {loading && (
         <CircularProgress
@@ -177,7 +222,6 @@ const EmailCard = ({
       {showReplyBox && (
         <ReplySection
           email={email}
-          handleSendReply={handleSendReply}
           handleCancel={() => setShowReplyBox(false)}
           aiResponse={aiResponse}
           handleSendEmail={handleSendEmail}

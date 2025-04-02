@@ -6,8 +6,8 @@ const DialogHeader = ({ header, handleClose }) => {
   return (
     <DialogTitle
       sx={{
-        backgroundColor: "#41a0d2",
-        color: "#ffffff",
+        backgroundColor: "#e8e6e6",
+        color: "#666",
         position: "relative",
         padding: "16px 24px",
         borderTopLeftRadius: "8px",
@@ -23,7 +23,7 @@ const DialogHeader = ({ header, handleClose }) => {
           position: "absolute",
           right: 16,
           top: 16,
-          color: "#ffffff",
+          color: "#666",
           "&:hover": {
             backgroundColor: "transparent",
           },

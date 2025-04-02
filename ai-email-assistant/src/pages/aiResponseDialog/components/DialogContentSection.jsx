@@ -26,7 +26,7 @@ const DialogContentSection = ({
           onChange={(e) => setEditedSender(e.target.value)}
           fullWidth
           sx={{
-            backgroundColor: "#ffffff",
+            backgroundColor: "",
             marginBottom: "16px",
             borderRadius: "8px",
           }}

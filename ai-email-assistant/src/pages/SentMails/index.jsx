@@ -92,29 +92,24 @@ const SentMails = () => {
 
         {/* Bulk Action Buttons */}
         <Box
-          display="flex"
-          justifyContent="flex-start"
-          sx={{ marginBottom: "16px", gap: "8px" }}
+          display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}
         >
-          <Button
-            variant="text"
-            color="primary"
-            startIcon={<Delete />}
-            onClick={handleBulkDelete}
-            disabled={selectedEmails.length === 0}
-            sx={{
-              color: "#9e9b9b",
-              padding: "4px 8px",
-              marginLeft: "20px",
-              fontSize: "14px",
-              minWidth: "150px",
-              backgroundColor: "#e8e6e6",
-              "&:hover": {
-                backgroundColor: "rgba(0, 0, 0, 0.2)",
-              }
-            }}
-          >
-            Delete Selected
+         <Button
+              variant="text"
+              startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
+              sx={{ 
+                color: "#9e9b9b",
+                padding: "4px 8px",
+                marginLeft: "20px",
+                fontSize: "14px",
+                minWidth: "150px",
+                backgroundColor: "#e8e6e6",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.2)",
+                }
+              }}
+            >
+            Delete
           </Button>
         </Box>
         </Box>

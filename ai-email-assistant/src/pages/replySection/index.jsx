@@ -64,8 +64,7 @@ const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse }) => {
       sx={{
         padding: 3,
         borderRadius: 2,
-        backgroundColor: "#f9f9f9",
-        boxShadow: 4,
+        boxShadow: 2,
         mt: 3,
         border: "1px solid #ddd",
         position: "relative",
@@ -118,20 +117,27 @@ const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse }) => {
       {isEditing ? (
         <TextareaAutosize
           fullWidth
-          minRows={6}
+          minRows={5}
           maxRows={10}
           placeholder="Write your reply..."
           value={replyText}
           onChange={(e) => setReplyText(e.target.value)}
-          sx={{
+          style={{
+            width: "100%",
             backgroundColor: "#fff",
-            borderRadius: 1,
-            padding: "12px",
+            borderRadius: "8px",
+            padding: "16px",
             fontSize: "14px",
-            lineHeight: "1.5",
+            lineHeight: "1.6",
             boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            minHeight: "150px",
-            overflowY: "auto",
+            minHeight: "100px",
+            border: "1px solid #ddd",
+            resize: "vertical",
+            "&:focus": {
+              outline: "none",
+              borderColor: "#554FEB",
+              boxShadow: "0 0 0 2px rgba(85, 79, 235, 0.1)",
+            },
           }}
         />
       ) : (
@@ -140,22 +146,43 @@ const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse }) => {
         </Typography>
       )}
 
-      <Box display="flex" justifyContent="flex-end" mt={2}>
+      <Box display="flex" justifyContent="flex-end" mt={2} gap={2}>
         {!isEditing ? (
           <>
             <Button
               variant="contained"
-              color="primary"
               onClick={handleCancel}
-              sx={{ marginRight: 1 }}
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#666",
+                textTransform: "none",
+                borderRadius: "8px",
+                padding: "4px 12px",
+                minWidth: "auto",
+                fontSize: "14px",
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                },
+              }}
             >
               Cancel
             </Button>
             <Button
               variant="contained"
-              color="primary"
               onClick={handleEdit}
               disabled={loading}
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#666",
+                textTransform: "none",
+                borderRadius: "8px",
+                padding: "4px 12px",
+                minWidth: "auto",
+                fontSize: "14px",
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                },
+              }}
             >
               Edit
             </Button>
@@ -164,17 +191,38 @@ const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse }) => {
           <>
             <Button
               variant="contained"
-              color="secondary"
               onClick={handleCancel}
-              sx={{ marginRight: 1 }}
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#666",
+                textTransform: "none",
+                borderRadius: "8px",
+                padding: "4px 12px",
+                minWidth: "auto",
+                fontSize: "14px",
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                },
+              }}
             >
               Cancel
             </Button>
             <Button
               variant="contained"
-              color="primary"
               onClick={handleSave}
               disabled={loading}
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#666",
+                textTransform: "none",
+                borderRadius: "8px",
+                padding: "4px 12px",
+                minWidth: "auto",
+                fontSize: "14px",
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                },
+              }}
             >
               Save
             </Button>
@@ -183,10 +231,21 @@ const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse }) => {
 
         <Button
           variant="contained"
-          color="primary"
           onClick={handleSendEmail}
           endIcon={<Send />}
           disabled={loading}
+          sx={{
+            backgroundColor: "#f5f5f5",
+            color: "#666",
+            textTransform: "none",
+            borderRadius: "8px",
+            padding: "4px 12px",
+            minWidth: "auto",
+            fontSize: "14px",
+            "&:hover": {
+              backgroundColor: "#e0e0e0",
+            },
+          }}
         >
           {loading ? "Sending..." : "Send"}
         </Button>
