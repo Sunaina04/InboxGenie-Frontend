@@ -5,6 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
 import "./login.css";
 import authStore from "../../stores/authStore";
+// import genbootLogo from "../../assets/images/Logo-slim.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -52,6 +53,13 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="left-section">
+        <div className="logo-container">
+          <img
+            src="/assets/images/Logo-slim.png"
+            alt="GENBOOT"
+            className="logo"
+          />
+        </div>
         <img
           src="/assets/images/illustration.png"
           alt="Illustration"
@@ -93,14 +101,14 @@ const Login = () => {
         </div>
         <div className="social-login">
           <button className="google-btn" onClick={handleGoogleLogin}>
-            <FcGoogle size={20} /> Sign in with Google
+            <FcGoogle size={30} /> Sign in with Google
           </button>
           <button className="facebook-btn">
             <FaFacebook size={20} />
           </button>
         </div>
         <p className="signup-text">
-          Don’t have an account? <a href="/signup">Sign up</a>
+          Don't have an account? <a href="/signup">Sign up</a>
         </p>
       </div>
     </div>
