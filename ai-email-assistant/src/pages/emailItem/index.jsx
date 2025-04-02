@@ -42,7 +42,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
   const displayEmail = isSentMail ? email.to : email.from;
 
   const handleDelete = async (e) => {
-    e.stopPropagation(); // Prevent triggering the onClick event of the ListItem
+    e.stopPropagation();
     try {
       await authStore.deleteEmail(email.id);
     } catch (error) {
@@ -103,7 +103,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
                 sx={{
                   color: "#5f6368",
                   fontSize: "14px",
-                  fontWeight: 500,      
+                  fontWeight: 600,      
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis"

@@ -13,6 +13,7 @@ import {
 import { Delete, MarkEmailRead } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import authStore from "../../stores/authStore";
+import aiResponseStore from "../../stores/aiResponseStore";
 import EmailItem from "../emailItem";
 import EmailFilter from "../emailDetail/components/emailFilter";
 import AutoReplyButton from "./components/AutoReplyButton";
@@ -55,6 +56,21 @@ const Inbox = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
+  const handleFilterChange = (value) => {
+    setFilter(value);
+    setIsAutoReplyEnabled(value === "Inquiries");
+  };
+  const handleAutoReply = async () => {
+    setIsLoading(true);
+    try {
+      await aiResponseStore.triggerAutoReply();
+      setIsLoading(false);
+      setFilter("All");
+      setIsAutoReplyEnabled(false);
+    } catch (error) {
+      console.error("Error sending auto-reply:", error);
+    }
+  };
 
   return (
     <Box
@@ -88,6 +104,8 @@ const Inbox = () => {
               sx={{ 
                 color: "#9e9b9b",
                 padding: "4px 8px",
+                marginLeft: "20px",
+                minWidth: "150px",
                 fontSize: "14px",
                 backgroundColor: "#e8e6e6",
                 "&:hover": {
@@ -103,7 +121,9 @@ const Inbox = () => {
               sx={{ 
                 color: "#9e9b9b",
                 padding: "4px 8px",
+                marginLeft: "20px",
                 fontSize: "14px",
+                minWidth: "150px",
                 backgroundColor: "#e8e6e6",
                 "&:hover": {
                   backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -112,6 +132,8 @@ const Inbox = () => {
             >
               Delete
             </Button>
+            <EmailFilter filter={filter} setFilter={handleFilterChange}  />
+            <AutoReplyButton isEnabled={isAutoReplyEnabled} onClick={() => {handleAutoReply()}} />
           </Box>
         </Box>
         <Typography

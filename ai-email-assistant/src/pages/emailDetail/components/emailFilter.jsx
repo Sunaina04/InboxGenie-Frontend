@@ -7,6 +7,7 @@ import {
   MenuItem,
   InputAdornment,
   IconButton,
+  Typography,
 } from "@mui/material";
 import { FilterList } from "@mui/icons-material";
 
@@ -25,30 +26,28 @@ const EmailFilter = ({ filter, setFilter }) => {
   return (
     <FormControl
       variant="outlined"
-      fullWidth
       sx={{
-        backgroundColor: "#fff",
-        borderRadius: 1,
-        boxShadow: 1,
-        "&:hover .MuiOutlinedInput-root": {
-          borderColor: "#00796b",
-        },
+        backgroundColor: "#f5f7fa", // Light gray background
+        borderRadius: "8px",
+        marginLeft: "20px",
+        minWidth: "180px",
       }}
     >
-      <InputLabel sx={{ color: "#4f5b62" }}>Filter</InputLabel>
+      {/* <Typography variant="body1" sx={{ padding: "8px" }}>
+        Sort by:
+      </Typography> */}
       <Select
         value={filter}
         onChange={handleChange}
-        label="Filter"
         displayEmpty
         sx={{
-          backgroundColor: "#f5f7fa",
-          borderRadius: 1,
-          paddingRight: "36px",
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#cfd8dc",
-            },
+          backgroundColor: "#fff", 
+          borderRadius: "8px",
+          height: "30px",
+          "& .MuiSelect-select": {
+            padding: "0 10px",
+            height: "40px", 
+          
             "&:hover fieldset": {
               borderColor: "#00796b",
             },
@@ -66,7 +65,7 @@ const EmailFilter = ({ filter, setFilter }) => {
         <MenuItem value="" disabled>
           <em>Choose a filter</em>
         </MenuItem>
-        {filterOptions?.map((option) => (
+        {filterOptions.map((option) => (
           <MenuItem key={option.value} value={option.value}>
             {option.label}
           </MenuItem>
@@ -79,12 +78,6 @@ const EmailFilter = ({ filter, setFilter }) => {
 EmailFilter.propTypes = {
   filter: PropTypes.string.isRequired,
   setFilter: PropTypes.func.isRequired,
-  filterOptions: PropTypes.arrayOf(
-    PropTypes.shape({
-      value: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
 };
 
 export default EmailFilter;
