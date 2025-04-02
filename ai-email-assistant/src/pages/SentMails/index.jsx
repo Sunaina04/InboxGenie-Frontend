@@ -8,16 +8,20 @@ import {
   Button,
   Pagination,
   List,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 import EmailItem from "../emailItem";
+import CustomPagination from "../../components/CustomPagination";
 import authStore from "../../stores/authStore";
 
 const SentMails = () => {
   const [sentEmails, setSentEmails] = useState([]);
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [emailsPerPage] = useState(5);
+  const [emailsPerPage] = useState(8);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSelectEmail = (emailId) => {
@@ -52,30 +56,39 @@ const SentMails = () => {
     setSentEmails(fetchedSentEmails);
   }, []);
 
-  const indexOfLastEmail = currentPage * emailsPerPage;
-  const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
-  const currentEmails = sentEmails.slice(indexOfFirstEmail, indexOfLastEmail);
-
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
+
+  const indexOfLastEmail = currentPage * emailsPerPage;
+  const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
+  const currentSentEmails = sentEmails?.slice(indexOfFirstEmail, indexOfLastEmail);
+
   return (
     <Box
       sx={{
         display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#f5f5f5",
-        padding: "16px",
+        flexDirection: "row",
+        backgroundColor: "#f4f5f7",
+        height: "100vh",
+        // minWidth: "1200px", // Increased minimum width
+        width: "calc(100% - 2 0px)",
       }}
     >
-      <Container sx={{ maxWidth: "800px", margin: "0 auto", padding: "16px" }}>
+      <Container sx={{ flex: 1, 
+        marginLeft: "20px", 
+        marginRight: "20px", 
+        padding: "16px", 
+        maxWidth: "100%",
+        }}>
+        <Box display="flex" alignItems="center" marginBottom={2}>
         <Typography
-          variant="h5"
-          sx={{ margin: "16px 0", fontWeight: 600, color: "#202124" }}
+          variant="h4"
+          sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
         >
           Sent Mails
         </Typography>
-        <Divider sx={{ marginBottom: "16px", borderColor: "#e0e0e0" }} />
+        {/* <Divider sx={{ marginBottom: "16px", borderColor: "#e0e0e0" }} /> */}
 
         {/* Bulk Action Buttons */}
         <Box
@@ -84,30 +97,30 @@ const SentMails = () => {
           sx={{ marginBottom: "16px", gap: "8px" }}
         >
           <Button
-            variant="outlined"
+            variant="text"
             color="primary"
             startIcon={<Delete />}
             onClick={handleBulkDelete}
             disabled={selectedEmails.length === 0}
             sx={{
-              fontWeight: 600,
+              color: "#9e9b9b",
+              padding: "4px 8px",
+              marginLeft: "20px",
               fontSize: "14px",
-              paddingX: "16px",
-              borderRadius: "24px",
-              borderColor: "#007aff",
-              color: "#007aff",
+              minWidth: "150px",
+              backgroundColor: "#e8e6e6",
               "&:hover": {
-                borderColor: "#0062cc",
-              },
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              }
             }}
           >
             Delete Selected
           </Button>
         </Box>
-
+        </Box>
         {/* Sent Emails List */}
         <List sx={{ padding: 0 }}>
-          {currentEmails?.map((email) => (
+          {currentSentEmails?.map((email) => (
             <EmailItem
               key={email.id}
               email={email}
@@ -117,13 +130,17 @@ const SentMails = () => {
             />
           ))}
         </List>
-        <Pagination
+        <CustomPagination
           count={Math.ceil(sentEmails.length / emailsPerPage)}
           page={currentPage}
           onChange={handlePageChange}
-          color="primary"
-          sx={{ marginTop: "16px", display: "flex", justifyContent: "center" }}
         />
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={isLoading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Container>
     </Box>
   );

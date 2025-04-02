@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Checkbox, ListItem, IconButton } from "@mui/material";
+import { Box, Typography, Checkbox, ListItem, IconButton, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useLocation } from "react-router-dom";
 import authStore from "../../stores/authStore";
@@ -55,6 +55,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
       button
       onClick={() => onClick(email.id)}
       sx={{
+        width: "100%",
         padding: "12px 16px",
         borderBottom: "1px solid #e0e0e0",
         display: "flex",
@@ -117,6 +118,26 @@ const EmailItem = ({ email, onSelect, onClick }) => {
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Button
+          variant="outlined"
+          sx={{
+            borderRadius: "8px",
+            borderColor: email.is_read ? "blue" : "red",
+            color: email.is_read ? "white" : "red",
+            backgroundColor: email.is_read ? "#007bff" : "rgba(255, 0, 0, 0.1)", // Blue for active, slight red for inactive
+            marginRight: 2,
+            padding: "4px 8px", // Reduced padding for smaller button
+            fontSize: "12px", // Reduced font size
+            minWidth: "80px", // Reduced min width
+            "&:hover": {
+              backgroundColor: email.is_read ? "#007bff" : "rgba(255, 0, 0, 0.1)", // Keep the same background on hover
+              borderColor: email.is_read ? "blue" : "red", // Keep the same border color on hover
+            },
+          }}
+        >
+          {email.is_read ? "Active" : "Inactive"}
+        </Button>
+
         <Typography variant="caption" sx={{ color: "#5f6368" }}>
           {formatDate(email.date)}
         </Typography>

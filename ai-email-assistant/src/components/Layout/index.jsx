@@ -23,24 +23,19 @@ import Loading from "../Loading";
 import "./layout.css";
 import genbootLogo from "../../images/genboot_logo.png";
 
-
 const Layout = ({ children }) => {
   const [menuRoutes, setMenuRoutes] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, isLoadingUser, user, emails, fetchEmails, isLoadingEmails } = authStore;
+  const { logout, isLoadingUser, user, fetchEmails } = authStore;
 
   useEffect(() => {
     setMenuRoutes(menuOptions()?.filter((menuItem) => menuItem));
-    fetchEmails();
+    fetchEmails({ inquire: false });
   }, []);
 
-  console.log('Emails from store:', emails);
-
-  const parsedEmails = emails ? (typeof emails === 'string' ? JSON.parse(emails) : emails) : [];
+  const parsedEmails = JSON.parse(localStorage.getItem("email")) || [];
   const recentEmails = Array.isArray(parsedEmails) ? parsedEmails.slice(0, 3) : [];
-
-  console.log('Recent emails:', recentEmails);
 
   const isActive = (route) =>
     location.pathname.replace(/\/$/, "") === route.path;
@@ -116,11 +111,7 @@ const Layout = ({ children }) => {
             >
               RECENT MAILS
             </Typography>
-            {isLoadingEmails ? (
-              <Box className="loading-emails">
-                <Loading />
-              </Box>
-            ) : recentEmails.length > 0 ? (
+            {recentEmails.length > 0 ? (
               recentEmails.map((email) => (
                 <Box 
                   className="recent-mail-item" 

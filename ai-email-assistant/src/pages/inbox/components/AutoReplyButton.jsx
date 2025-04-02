@@ -9,9 +9,8 @@ const AutoReplyButton = ({ isEnabled, onClick }) => {
       disabled={!isEnabled}
       onClick={onClick}
       sx={{
-        backgroundColor: "#f5f7fa", // Light gray background
-        borderRadius: "8px",
-       
+        backgroundColor: "#f5f7fa",
+        borderRadius: "8px",       
         marginLeft: "20px",
         padding: "4px 8px",
         minWidth: "150px",

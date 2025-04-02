@@ -5,8 +5,6 @@ import {
   Typography,
   Button,
   List,
-  Pagination,
-  Grid,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
@@ -17,6 +15,7 @@ import aiResponseStore from "../../stores/aiResponseStore";
 import EmailItem from "../emailItem";
 import EmailFilter from "../emailDetail/components/emailFilter";
 import AutoReplyButton from "./components/AutoReplyButton";
+import CustomPagination from "../../components/CustomPagination";
 
 const Inbox = () => {
   const [emails, setEmails] = useState([]);
@@ -29,11 +28,20 @@ const Inbox = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsLoading(true);
-    authStore.fetchEmails({ inquire: isAutoReplyEnabled });
-    const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
-    setEmails(fetchedEmails);
-    setIsLoading(false);
+    const fetchEmails = async () => {
+      setIsLoading(true);
+      try {
+        await authStore.fetchEmails({ inquire: isAutoReplyEnabled });
+        const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
+        setEmails(fetchedEmails);
+      } catch (error) {
+        console.error("Error fetching emails:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmails();
   }, [isAutoReplyEnabled]);
 
   const handleSelectEmail = (emailId) => {
@@ -160,12 +168,10 @@ const Inbox = () => {
             />
           ))}
         </List>
-        <Pagination
+        <CustomPagination
           count={Math.ceil(emails.length / emailsPerPage)}
           page={currentPage}
           onChange={handlePageChange}
-          color="primary"
-          sx={{ marginTop: "16px", display: "flex", justifyContent: "center" }}
         />
       </Container>
       <Backdrop

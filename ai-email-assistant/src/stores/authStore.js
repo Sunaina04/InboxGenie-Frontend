@@ -73,7 +73,7 @@ class AuthStore {
     });
     try {
       const params = inquire ? { inquire: true } : {};
-      const response = await axios.get("/emails/", { params });
+      const response = await axios.get("/emails/", { params: { inbox: true } });
       runInAction(() => {
         if (response.status === 200) {
           this.emails = JSON.stringify(response.data.emails);
