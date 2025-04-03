@@ -42,10 +42,10 @@ const EmailCard = ({
   // Updated function to extract name and email
   const getSenderInfo = (emailString) => {
     if (!emailString) return { name: '', email: '' };
-    
+
     // Remove angular brackets if present
     const cleanEmail = emailString.replace(/[<>]/g, '');
-    
+
     // Check if the email contains a name in the format "Name <email@example.com>"
     const nameMatch = emailString.match(/"([^"]+)"\s*<(.+)>/);
     if (nameMatch) {
@@ -63,7 +63,7 @@ const EmailCard = ({
         email: spaceMatch[2]
       };
     }
-    
+
     // If no name found, return the email as both name and email
     return {
       name: cleanEmail,
@@ -73,7 +73,6 @@ const EmailCard = ({
 
   // Get sender info based on path
   const senderInfo = isSentMail ? getSenderInfo(email.to) : getSenderInfo(email.from);
-  const recipientInfo = isSentMail ? getSenderInfo(email.from) : getSenderInfo(email.to);
 
   return (
     <Paper
@@ -84,8 +83,9 @@ const EmailCard = ({
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         mb: 3,
         width: "100%",
-        maxWidth: "100%",
+        maxWidth: "1200px",
         mx: "auto",
+        borderTop: "3px solid #554FEB",
       }}
     >
       {/* Header Section */}
@@ -154,6 +154,7 @@ const EmailCard = ({
           color: "#444",
           lineHeight: 1.6,
           fontSize: "14px",
+          ml: 2,
           mt: 4,
           mb: 6,
           whiteSpace: "pre-line",

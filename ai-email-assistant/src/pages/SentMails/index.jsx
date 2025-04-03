@@ -45,8 +45,12 @@ const SentMails = () => {
 
   const handleEmailClick = (emailId) => {
     const clickedEmail = sentEmails.find((email) => email.id === emailId);
-    console.log("clicked email", clickedEmail);
-    navigate(`/sent_email/${clickedEmail.id}`, { state: clickedEmail });
+    if (clickedEmail) {
+      navigate(`/sent_email/${clickedEmail.id}`, {
+        state: { email: clickedEmail },
+        replace: true
+      });
+    }
   };
 
   useEffect(() => {
@@ -71,33 +75,28 @@ const SentMails = () => {
         flexDirection: "row",
         backgroundColor: "#f4f5f7",
         height: "100vh",
-        // minWidth: "1200px", // Increased minimum width
-        width: "calc(100% - 2 0px)",
+        width: "calc(100% - 20px)",
       }}
     >
-      <Container sx={{ flex: 1, 
-        marginLeft: "20px", 
-        marginRight: "20px", 
-        padding: "16px", 
+      <Container sx={{
+        flex: 1,
+        marginLeft: "20px",
+        marginRight: "20px",
+        padding: "16px",
         maxWidth: "100%",
-        }}>
+      }}>
         <Box display="flex" alignItems="center" marginBottom={2}>
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
-        >
-          Sent Mails
-        </Typography>
-        {/* <Divider sx={{ marginBottom: "16px", borderColor: "#e0e0e0" }} /> */}
-
-        {/* Bulk Action Buttons */}
-        <Box
-          display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}
-        >
-         <Button
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
+          >
+            Sent Mails
+          </Typography>
+          <Box display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}>
+            <Button
               variant="text"
               startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
-              sx={{ 
+              sx={{
                 color: "#9e9b9b",
                 padding: "4px 8px",
                 marginLeft: "20px",
@@ -109,18 +108,17 @@ const SentMails = () => {
                 }
               }}
             >
-            Delete
-          </Button>
+              Delete
+            </Button>
+          </Box>
         </Box>
-        </Box>
-        {/* Sent Emails List */}
         <List sx={{ padding: 0 }}>
           {currentSentEmails?.map((email) => (
             <EmailItem
               key={email.id}
               email={email}
               onSelect={handleSelectEmail}
-              onClick={() => handleEmailClick(email.id)}
+              onClick={handleEmailClick}
               onDelete={handleDeleteEmail}
             />
           ))}

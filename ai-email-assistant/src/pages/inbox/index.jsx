@@ -16,8 +16,9 @@ import EmailItem from "../emailItem";
 import EmailFilter from "../emailDetail/components/emailFilter";
 import AutoReplyButton from "./components/AutoReplyButton";
 import CustomPagination from "../../components/CustomPagination";
+import { observer } from "mobx-react-lite";
 
-const Inbox = () => {
+const Inbox = observer(() => {
   const [emails, setEmails] = useState([]);
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,22 +28,30 @@ const Inbox = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchEmails = async () => {
-      setIsLoading(true);
-      try {
-        await authStore.fetchEmails({ inquire: isAutoReplyEnabled });
-        const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
-        setEmails(fetchedEmails);
-      } catch (error) {
-        console.error("Error fetching emails:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Function to fetch emails
+  const fetchEmails = async () => {
+    setIsLoading(true);
+    try {
+      await authStore.fetchEmails({ inquire: isAutoReplyEnabled });
+      const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
+      setEmails(fetchedEmails);
+    } catch (error) {
+      console.error("Error fetching emails:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Initial fetch
+  useEffect(() => {
     fetchEmails();
   }, [isAutoReplyEnabled]);
+
+  // Update emails when authStore.emails changes
+  useEffect(() => {
+    const storedEmails = JSON.parse(localStorage.getItem("email")) || [];
+    setEmails(storedEmails);
+  }, [authStore.emails]);
 
   const handleSelectEmail = (emailId) => {
     const updatedEmails = emails.map((email) =>
@@ -54,31 +63,29 @@ const Inbox = () => {
 
   const handleEmailClick = (emailId) => {
     const clickedEmail = emails.find((email) => email.id === emailId);
-    navigate(`/email/${clickedEmail.id}`, { state: clickedEmail });
+    if (clickedEmail) {
+      navigate(`/email/${clickedEmail.id}`, {
+        state: { email: clickedEmail },
+        replace: true
+      });
+    }
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+  };
+
+  const handleAutoReply = () => {
+    setIsAutoReplyEnabled(!isAutoReplyEnabled);
+  };
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
   const currentEmails = emails?.slice(indexOfFirstEmail, indexOfLastEmail);
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
-  const handleFilterChange = (value) => {
-    setFilter(value);
-    setIsAutoReplyEnabled(value === "Inquiries");
-  };
-  const handleAutoReply = async () => {
-    setIsLoading(true);
-    try {
-      await aiResponseStore.triggerAutoReply();
-      setIsLoading(false);
-      setFilter("All");
-      setIsAutoReplyEnabled(false);
-    } catch (error) {
-      console.error("Error sending auto-reply:", error);
-    }
-  };
 
   return (
     <Box
@@ -87,16 +94,15 @@ const Inbox = () => {
         flexDirection: "row",
         backgroundColor: "#f4f5f7",
         height: "100vh",
-        // minWidth: "1200px", // Increased minimum width
-        width: "calc(100% - 2 0px)", // Adjusted width to account for sidebar
+        width: "calc(100% - 20px)",
       }}
     >
-      <Container sx={{ 
-        flex: 1, 
-        marginLeft: "20px", 
-        marginRight: "20px", 
-        padding: "16px", 
-        maxWidth: "100%", // Increase this value to make the container wider
+      <Container sx={{
+        flex: 1,
+        marginLeft: "20px",
+        marginRight: "20px",
+        padding: "16px",
+        maxWidth: "100%",
       }}>
         <Box display="flex" alignItems="center" marginBottom={2}>
           <Typography
@@ -109,7 +115,7 @@ const Inbox = () => {
             <Button
               variant="text"
               startIcon={<MarkEmailRead sx={{ color: "#9e9b9b" }} />}
-              sx={{ 
+              sx={{
                 color: "#9e9b9b",
                 padding: "4px 8px",
                 marginLeft: "20px",
@@ -126,7 +132,7 @@ const Inbox = () => {
             <Button
               variant="text"
               startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
-              sx={{ 
+              sx={{
                 color: "#9e9b9b",
                 padding: "4px 8px",
                 marginLeft: "20px",
@@ -140,14 +146,14 @@ const Inbox = () => {
             >
               Delete
             </Button>
-            <EmailFilter filter={filter} setFilter={handleFilterChange}  />
-            <AutoReplyButton isEnabled={isAutoReplyEnabled} onClick={() => {handleAutoReply()}} />
+            <EmailFilter filter={filter} setFilter={handleFilterChange} />
+            <AutoReplyButton isEnabled={isAutoReplyEnabled} onClick={handleAutoReply} />
           </Box>
         </Box>
         <Typography
           variant="h6"
           color="primary"
-          sx={{ fontWeight: 500, marginBottom: "16px",color:"#0848d1"}}
+          sx={{ fontWeight: 500, marginBottom: "16px", color: "#0848d1" }}
         >
           Primary Mails
         </Typography>
@@ -156,7 +162,7 @@ const Inbox = () => {
             background: "white",
             borderRadius: "12px",
             padding: "16px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",           
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         >
           {currentEmails?.map((email) => (
@@ -164,7 +170,7 @@ const Inbox = () => {
               key={email.id}
               email={email}
               onSelect={handleSelectEmail}
-              onClick={() => handleEmailClick(email.id)}
+              onClick={handleEmailClick}
             />
           ))}
         </List>
@@ -182,6 +188,6 @@ const Inbox = () => {
       </Backdrop>
     </Box>
   );
-};
+});
 
 export default Inbox;

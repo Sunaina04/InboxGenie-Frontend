@@ -27,12 +27,12 @@ const Layout = ({ children }) => {
   const [menuRoutes, setMenuRoutes] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, isLoadingUser, user, fetchEmails } = authStore;
+  const { logout, isLoadingUser, fetchEmails } = authStore;
 
   useEffect(() => {
     setMenuRoutes(menuOptions()?.filter((menuItem) => menuItem));
     fetchEmails({ inquire: false });
-  }, []);
+  }, [fetchEmails]);
 
   const parsedEmails = JSON.parse(localStorage.getItem("email")) || [];
   const recentEmails = Array.isArray(parsedEmails) ? parsedEmails.slice(0, 3) : [];
@@ -45,6 +45,27 @@ const Layout = ({ children }) => {
     const match = sender.match(/(.*)<(.*)>/);
     return match ? match[1].trim() : sender;
   };
+
+  const handleEmailClick = (email) => {
+    navigate(`/email/${email.id}`, {
+      state: { email },
+      replace: true
+    });
+  };
+
+  const getUserInfo = () => {
+    const userStr = localStorage.getItem("userInfo");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      return {
+        name: user.name || "User",
+        email: user.email || ""
+      };
+    }
+    return { name: "User", email: "" };
+  };
+
+  const userInfo = getUserInfo();
 
   return isLoadingUser ? (
     <Loading />
@@ -68,11 +89,11 @@ const Layout = ({ children }) => {
         <Box className="sidebar-header">
           <img src={genbootLogo} alt="GENBOOT" className="logo" />
         </Box>
-        
+
         {/* Add Dashboard heading */}
-        <Typography 
-          variant="h6" 
-          sx={{ 
+        <Typography
+          variant="h6"
+          sx={{
             padding: "16px 20px",
             color: "#333",
             fontWeight: 500,
@@ -99,8 +120,8 @@ const Layout = ({ children }) => {
             mt: 3,
             padding: "0 20px"
           }}>
-            <Typography 
-              variant="subtitle2" 
+            <Typography
+              variant="subtitle2"
               sx={{
                 color: "#666",
                 fontSize: "12px",
@@ -113,10 +134,10 @@ const Layout = ({ children }) => {
             </Typography>
             {recentEmails.length > 0 ? (
               recentEmails.map((email) => (
-                <Box 
-                  className="recent-mail-item" 
+                <Box
+                  className="recent-mail-item"
                   key={email.id}
-                  onClick={() => navigate(`/email/${email.id}`)}
+                  onClick={() => handleEmailClick(email)}
                   sx={{
                     display: "flex",
                     alignItems: "flex-start",
@@ -129,9 +150,9 @@ const Layout = ({ children }) => {
                     }
                   }}
                 >
-                  <Avatar 
-                    sx={{ 
-                      width: 32, 
+                  <Avatar
+                    sx={{
+                      width: 32,
                       height: 32,
                       marginRight: "12px",
                       bgcolor: "#554FEB",
@@ -141,7 +162,7 @@ const Layout = ({ children }) => {
                     {email.from?.charAt(0)}
                   </Avatar>
                   <Box sx={{ flex: 1, overflow: "hidden" }}>
-                    <Typography 
+                    <Typography
                       sx={{
                         fontSize: "13px",
                         fontWeight: 500,
@@ -153,7 +174,7 @@ const Layout = ({ children }) => {
                     >
                       {getSenderName(email.from)}
                     </Typography>
-                    <Typography 
+                    <Typography
                       sx={{
                         fontSize: "12px",
                         color: "#666",
@@ -175,12 +196,12 @@ const Layout = ({ children }) => {
           </Box>
         </Box>
         {/* Settings Section in Footer */}
-        <Box sx={{ 
+        <Box sx={{
           marginTop: "auto", // Push to bottom
           padding: "20px"
         }}>
-          <Typography 
-            variant="subtitle2" 
+          <Typography
+            variant="subtitle2"
             sx={{
               color: "#666",
               fontSize: "12px",
@@ -228,6 +249,26 @@ const Layout = ({ children }) => {
       <Box className="main-content">
         {/* Header */}
         <Box className="header">
+          {/* Greeting */}
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            marginRight: '20px'
+          }}>
+            <Typography
+              sx={{
+                fontSize: '20px',
+                fontWeight: 600,
+                color: '#333',
+                marginLeft: '25px',
+                textTransform: 'capitalize',
+              }}
+            >
+              Hello, {userInfo.name.charAt(0).toUpperCase() + userInfo.name.slice(1).toLowerCase()}
+            </Typography>
+          </Box>
+
+          {/* Search Bar */}
           <Box className="search-bar">
             <Search className="search-icon" />
             <InputBase
@@ -235,6 +276,8 @@ const Layout = ({ children }) => {
               className="search-input"
             />
           </Box>
+
+          {/* Header Icons */}
           <Box className="header-icons">
             <IconButton className="filter-icon">
               <Tune />
@@ -244,7 +287,34 @@ const Layout = ({ children }) => {
                 <Notifications />
               </Badge>
             </IconButton>
-            <Avatar src={user?.avatar} className="avatar" />
+            {/* Avatar section */}
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}>
+              <Avatar
+                sx={{
+                  bgcolor: '#20B2AA',
+                  width: 35,
+                  height: 35,
+                  marginLeft: '20px',
+                  fontSize: '16px',
+                  fontWeight: 500
+                }}
+              >
+                {userInfo.name?.charAt(0)}
+              </Avatar>
+              <Typography
+                sx={{
+                  fontSize: '11px',
+                  color: '#666',
+                  mt: 0.5
+                }}
+              >
+                {userInfo.email}
+              </Typography>
+            </Box>
           </Box>
         </Box>
 

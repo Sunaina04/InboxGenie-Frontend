@@ -8,13 +8,13 @@ const formatDate = (dateString) => {
   const date = new Date(dateString);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
-  
+
   if (isToday) {
     // For today's emails, show time (e.g., "2:30 PM")
-    return date.toLocaleTimeString([], { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString([], {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     });
   } else {
     // For older emails, show date format (e.g., "Mar 25")
@@ -50,10 +50,16 @@ const EmailItem = ({ email, onSelect, onClick }) => {
     }
   };
 
+  const handleClick = (e) => {
+    if (onClick) {
+      onClick(email.id);
+    }
+  };
+
   return (
     <ListItem
       button
-      onClick={() => onClick(email.id)}
+      onClick={handleClick}
       sx={{
         width: "100%",
         padding: "12px 16px",
@@ -66,12 +72,16 @@ const EmailItem = ({ email, onSelect, onClick }) => {
           backgroundColor: email.is_read ? "#f1f3f4" : "#f5f5f5",
         },
         borderLeft: email.is_read ? "none" : "4px solid #007aff",
+        cursor: "pointer",
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
         <Checkbox
           checked={email.isSelected}
-          onChange={() => onSelect(email.id)}
+          onChange={(e) => {
+            e.stopPropagation();
+            onSelect(email.id);
+          }}
           sx={{
             color: "#202124",
             "&.Mui-checked": {
@@ -88,11 +98,11 @@ const EmailItem = ({ email, onSelect, onClick }) => {
             <Box sx={{ flex: 1, paddingRight: "16px" }}>
               <Typography
                 variant="body1"
-                sx={{ 
-                  fontWeight: email.is_read ? 400 : 600, 
-                  color: "#202124", 
+                sx={{
+                  fontWeight: email.is_read ? 400 : 600,
+                  color: "#202124",
                   fontSize: "15px",
-                  minWidth:"150px",
+                  minWidth: "150px",
                 }}
               >
                 {getSenderName(displayEmail)}
@@ -104,7 +114,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
                 sx={{
                   color: "#5f6368",
                   fontSize: "14px",
-                  fontWeight: 600,      
+                  fontWeight: 600,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis"

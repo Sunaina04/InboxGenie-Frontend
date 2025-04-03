@@ -18,8 +18,7 @@ import toast from "react-hot-toast";
 const EmailDetail = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [email, setEmail] = useState(location.state || {});
+  const [email, setEmail] = useState(null);
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
@@ -27,10 +26,12 @@ const EmailDetail = () => {
   const backPath = isInbox ? "/sent" : "/inbox";
 
   useEffect(() => {
-    if (!email) {
+    if (location.state?.email) {
+      setEmail(location.state.email);
+    } else {
       navigate(backPath);
     }
-  }, [email, navigate, backPath]);
+  }, [location.state, navigate, backPath]);
 
   const handleAIResponse = () => {
     setLoading(true);
@@ -74,7 +75,7 @@ const EmailDetail = () => {
         margin: 0,
       }}
     >
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
         <Box sx={{
           flex: 1,
           width: "100%",
@@ -92,7 +93,7 @@ const EmailDetail = () => {
             />
           ) : (
             <Typography variant="body1" color="textSecondary" align="center">
-              No emails available.
+              No email selected.
             </Typography>
           )}
         </Box>
@@ -102,6 +103,10 @@ const EmailDetail = () => {
         <Box
           sx={{
             position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             backgroundColor: "rgba(255, 255, 255, 0.6)",
             display: "flex",
             justifyContent: "center",

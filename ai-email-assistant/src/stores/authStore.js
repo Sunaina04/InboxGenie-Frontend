@@ -73,11 +73,13 @@ class AuthStore {
     });
     try {
       const params = inquire ? { inquire: true } : {};
-      const response = await axios.get("/emails/", { params: { inbox: true } });
+      const response = await axios.get("/emails/", { params});
       runInAction(() => {
         if (response.status === 200) {
           this.emails = JSON.stringify(response.data.emails);
+          this.userInfo = JSON.stringify(response.data.user_info);
           localStorage.setItem("email", JSON.stringify(response.data.emails));
+          localStorage.setItem("userInfo", JSON.stringify(response.data.user_info));
         } else {
           toast.error("Failed to fetch emails.");
         }
@@ -124,13 +126,17 @@ class AuthStore {
     try {
       const response = await axios.delete(`/delete-email/${messageId}/`);
       if (response.status === 200) {
-        // Update the emails list by removing the deleted email
-        const updatedEmails = this.emails.filter(email => email.id !== messageId);
+        const currentEmails = JSON.parse(localStorage.getItem("email")) || [];
+        const updatedEmails = currentEmails.filter(email => email.id !== messageId);
+        
         runInAction(() => {
-          this.emails = updatedEmails;
+          this.emails = JSON.stringify(updatedEmails);
           localStorage.setItem("email", JSON.stringify(updatedEmails));
         });
+        
         toast.success("Email deleted successfully!");
+        
+        await this.fetchEmails({ inquire: false });
       } else {
         throw new Error("Failed to delete email");
       }
