@@ -33,8 +33,8 @@ const Inbox = observer(() => {
     setIsLoading(true);
     try {
       await authStore.fetchEmails({ inquire: isAutoReplyEnabled });
-      const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
-      setEmails(fetchedEmails);
+      // const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
+      // setEmails(fetchedEmails);
     } catch (error) {
       console.error("Error fetching emails:", error);
     } finally {
@@ -79,7 +79,7 @@ const Inbox = observer(() => {
     setIsAutoReplyEnabled(!isAutoReplyEnabled);
   };
 
-  const handlePageChange = (event, value) => {
+  const handlePageChange = (value) => {
     setCurrentPage(value);
   };
 

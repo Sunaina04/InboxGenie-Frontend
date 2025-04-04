@@ -21,7 +21,7 @@ class EmailStore {
     });
 
     try {
-      const response = await axios.post("/send_ai_email/", {
+      const response = await axios.post("/send-email/", {
         from,
         to,
         subject,

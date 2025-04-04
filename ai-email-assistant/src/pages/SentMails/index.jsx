@@ -15,13 +15,13 @@ import { Delete } from "@mui/icons-material";
 import EmailItem from "../emailItem";
 import CustomPagination from "../../components/CustomPagination";
 import authStore from "../../stores/authStore";
+import { observer } from "mobx-react-lite";
 
-const SentMails = () => {
+const SentMails = observer(() => {
   const [sentEmails, setSentEmails] = useState([]);
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [emailsPerPage] = useState(8);
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSelectEmail = (emailId) => {
@@ -130,13 +130,13 @@ const SentMails = () => {
         />
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={isLoading}
+          open={authStore.isLoadingEmails}
         >
           <CircularProgress color="inherit" />
         </Backdrop>
       </Container>
     </Box>
   );
-};
+});
 
 export default SentMails;

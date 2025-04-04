@@ -3,8 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { useGoogleLogin } from '@react-oauth/google';
 import "./login.css";
 import authStore from "../../stores/authStore";
+import { toast } from "react-toastify";
+import axios from "axios";
 // import genbootLogo from "../../assets/images/Logo-slim.png";
 
 const Login = () => {
@@ -12,6 +15,46 @@ const Login = () => {
   const [emails, setEmails] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  const googleLogin = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (codeResponse) => {
+      try {
+        console.log("Code response:", codeResponse);
+        const response = await axios.post(
+          "https://oauth2.googleapis.com/token",
+          {
+            code: codeResponse.code,
+            client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
+            client_secret: process.env.REACT_APP_GOOGLE_CLIENT_SECRET,
+            redirect_uri: window.location.origin,
+            grant_type: "authorization_code",
+          }
+        );
+
+        const { id_token, access_token, refresh_token, expires_in } = response.data;
+        console.log("ID Token:", id_token);
+        console.log("Access Token:", access_token);
+
+        // Store tokens and timestamp
+        localStorage.setItem("gmail_access_token", access_token);
+        localStorage.setItem("google_refresh_token", refresh_token);
+        localStorage.setItem("token_timestamp", Date.now().toString());
+
+        await authStore.handleGoogleToken(id_token, access_token, navigate);
+      } catch (error) {
+        console.error("Google login error:", error);
+        toast.error("Google login failed");
+      }
+    },
+    onError: (errorResponse) => {
+      console.error("Google login failed:", errorResponse);
+      toast.error("Google login failed");
+    },
+    scope: "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send openid email profile",
+    redirect_uri: window.location.origin
+  });
+
 
   useEffect(() => {
     if (authStore.emails.length > 0) {
@@ -25,29 +68,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    signInWithGoogle()
-      .then(async () => {
-        try {
-          await authStore.fetchEmails();
-          navigate("/inbox");
-        } catch (error) {
-          console.error("Error during fetching emails:", error);
-        }
-      })
-      .catch((error) => {
-        console.error("Google sign-in error:", error);
-      });
-  };
-
-  const signInWithGoogle = () => {
-    return new Promise((resolve, reject) => {
-      const isSignedIn = true;
-      if (isSignedIn) {
-        resolve();
-      } else {
-        reject("Google sign-in failed");
-      }
-    });
+    googleLogin();
   };
 
   return (

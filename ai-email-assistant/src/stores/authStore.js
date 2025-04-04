@@ -2,6 +2,7 @@ import { makeObservable, observable, action, runInAction } from "mobx";
 import axios from "../config/axios";
 import { privatePaths } from "../config/routes";
 import toast, { Toaster } from "react-hot-toast";
+import { getValidToken } from "../utils/tokenUtils";
 
 const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
 const { REACT_APP_GOOGLE_REDIRECT_URI } = process.env;
@@ -27,8 +28,7 @@ class AuthStore {
       login: action,
       logout: action,
       fetchEmails: action,
-      googleLogin: action, // New action to handle Google login
-      handleGoogleCallback: action, // To handle Google callback
+      handleGoogleToken: action,
       fetchSentEmails: action,
       deleteEmail: action,
     });
@@ -67,26 +67,37 @@ class AuthStore {
       });
   };
 
-  fetchEmails = async (inquire = false) => {
+  fetchEmails = async ({ inquire = false }) => {
     runInAction(() => {
       this.isLoadingEmails = true;
     });
     try {
-      const params = inquire ? { inquire: true } : {};
-      const response = await axios.get("/emails/", { params});
-      runInAction(() => {
-        if (response.status === 200) {
-          this.emails = JSON.stringify(response.data.emails);
-          this.userInfo = JSON.stringify(response.data.user_info);
-          localStorage.setItem("email", JSON.stringify(response.data.emails));
-          localStorage.setItem("userInfo", JSON.stringify(response.data.user_info));
-        } else {
-          toast.error("Failed to fetch emails.");
+      const accessToken = await getValidToken();
+      if (!accessToken) {
+        throw new Error("No valid access token found");
+      }
+
+      const response = await axios.get("/emails/", {
+        params: { inquire },
+        headers: {
+          Authorization: `Bearer ${accessToken}`
         }
       });
+
+      if (response.status === 200) {
+        const { emails, user_info } = response.data;
+        runInAction(() => {
+          this.emails = JSON.stringify(emails);
+          this.userInfo = JSON.stringify(user_info);
+          localStorage.setItem("email", JSON.stringify(emails));
+          localStorage.setItem("userInfo", JSON.stringify(user_info));
+        });
+      } else {
+        toast.error("Failed to fetch emails");
+      }
     } catch (error) {
-      toast.error("Failed to fetch emails.");
       console.error("Error fetching emails:", error);
+      toast.error("Error fetching emails");
     } finally {
       runInAction(() => {
         this.isLoadingEmails = false;
@@ -99,22 +110,30 @@ class AuthStore {
       this.isLoadingEmails = true;
     });
     try {
-      const response = await axios.get("/sent-mails/");
-      runInAction(() => {
-        if (response.status === 200) {
-          this.emails = response.data.sent_emails;
-          localStorage.setItem(
-            "sentEmails",
-            JSON.stringify(response.data.sent_emails)
-          );
-          toast.success("Sent emails fetched successfully!");
-        } else {
-          toast.error("Failed to fetch sent emails.");
+      const accessToken = await getValidToken();
+      if (!accessToken) {
+        throw new Error("No valid access token found");
+      }
+
+      const response = await axios.get("/sent-mails/", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
         }
       });
+
+      if (response.status === 200) {
+        const { sent_emails } = response.data;
+        runInAction(() => {
+          this.emails = JSON.stringify(sent_emails);
+          localStorage.setItem("sentEmails", JSON.stringify(sent_emails));
+        });
+        toast.success("Sent emails fetched successfully!");
+      } else {
+        toast.error("Failed to fetch sent emails");
+      }
     } catch (error) {
-      toast.error("Failed to fetch sent emails.");
       console.error("Error fetching sent emails:", error);
+      toast.error("Error fetching sent emails");
     } finally {
       runInAction(() => {
         this.isLoadingEmails = false;
@@ -124,10 +143,21 @@ class AuthStore {
 
   deleteEmail = async (messageId) => {
     try {
-      const response = await axios.delete(`/delete-email/${messageId}/`);
+      const accessToken = await getValidToken();
+      if (!accessToken) {
+        throw new Error("No valid access token found");
+      }
+
+      const response = await axios.delete(`/delete-email/${messageId}/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+      
       if (response.status === 200) {
-        const currentEmails = JSON.parse(localStorage.getItem("email")) || [];
-        const updatedEmails = currentEmails.filter(email => email.id !== messageId);
+        const currentEmails = localStorage.getItem("email") || "[]";
+        const emailsArray = JSON.parse(currentEmails);
+        const updatedEmails = emailsArray.filter(email => email.id !== messageId);
         
         runInAction(() => {
           this.emails = JSON.stringify(updatedEmails);
@@ -146,29 +176,36 @@ class AuthStore {
     }
   };
 
-  googleLogin = () => {
-    console.log(googleClientId);
-    console.log(redirectUri);
-    if (!googleClientId || !redirectUri) {
-      console.error("Google Client ID or Redirect URI is not defined.");
-      return;
-    }
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?response_type=code&client_id=${googleClientId}&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly&state=yOjMAmenqR18QMnnKV6hiSqt1NrNvZ&access_type=offline&service=lso&o2v=1&ddm=1&flowName=GeneralOAuthFlow`;    window.location.href = googleAuthUrl;
-  };
-  handleGoogleCallback = async (code) => {
+  handleGoogleToken = async (idToken, accessToken, navigate) => {
     try {
-      const response = await axios.post("/auth/google-login", { code });
+      const response = await axios.post("/auth/google-login/", { 
+        id_token: idToken,
+        access_token: accessToken 
+      });
       if (response.status === 200) {
-        const { emails, user } = response.data;
-        this.user = user;
-        this.emails = emails;
-        localStorage.setItem("user", JSON.stringify(user));
+        const { user } = response.data;
+        console.log("user", user);
+        runInAction(() => {
+          this.userInfo = {
+            email: user.email,
+            name: user.name,
+            isNew: user.is_new
+          };
+          localStorage.setItem("userInfo", JSON.stringify(this.userInfo));
+        });
         toast.success("Successfully logged in with Google");
+        
+        // Fetch emails after successful login
+        await this.fetchEmails({ inquire: false });
+        
+        if (navigate) {
+          navigate("/inbox");
+        }
       } else {
         toast.error("Failed to log in with Google");
       }
     } catch (error) {
-      console.error("Error during Google login callback:", error);
+      console.error("Error during Google login:", error);
       toast.error("Error during Google login");
     }
   };

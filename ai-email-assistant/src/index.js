@@ -7,17 +7,19 @@ import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./config/theme";
 import App from "./core/index";
 import toast, { Toaster } from "react-hot-toast";
-<script src="https://apis.google.com/js/api.js"></script>;
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <BrowserRouter>
-    <ThemeProvider theme={theme}>
-      <Toaster />
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
-  </BrowserRouter>
+  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <Toaster />
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </BrowserRouter>
+  </GoogleOAuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
