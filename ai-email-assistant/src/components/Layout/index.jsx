@@ -224,7 +224,7 @@ const Layout = ({ children }) => {
           {/* Logout Button with red text */}
           <Box
             className="logout-button"
-            onClick={() => logout({ callback: () => navigate("/") })}
+            onClick={() => logout({ callback: () => navigate("/login") })}
             sx={{
               display: "flex",
               alignItems: "center",

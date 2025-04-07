@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   Container,
@@ -17,6 +17,7 @@ import EmailFilter from "../emailDetail/components/emailFilter";
 import AutoReplyButton from "./components/AutoReplyButton";
 import CustomPagination from "../../components/CustomPagination";
 import { observer } from "mobx-react-lite";
+import { toast } from "react-hot-toast";
 
 const Inbox = observer(() => {
   const [emails, setEmails] = useState([]);
@@ -29,19 +30,22 @@ const Inbox = observer(() => {
   const navigate = useNavigate();
 
   // Function to fetch emails
-  const fetchEmails = async () => {
+  const fetchEmails = useCallback(async (params = {}) => {
     setIsLoading(true);
     try {
-      await authStore.fetchEmails({ inquire: isAutoReplyEnabled });
-      // const fetchedEmails = JSON.parse(localStorage.getItem("email")) || [];
-      // setEmails(fetchedEmails);
+      const accessToken = localStorage.getItem("gmail_access_token");
+      if (!accessToken) {
+        toast.error("Access token not found. Please log in again.");
+        return;
+      }
+      await authStore.fetchEmails(params);
     } catch (error) {
       console.error("Error fetching emails:", error);
+      toast.error("Failed to fetch emails");
     } finally {
       setIsLoading(false);
     }
-  };
-
+  }, []);
   // Initial fetch
   useEffect(() => {
     fetchEmails();
@@ -73,10 +77,38 @@ const Inbox = observer(() => {
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
+    
+    const params = {
+      inquiry: newFilter === "Inquiries",
+      support: newFilter === "Support",
+      grievance: newFilter === "Grievances"
+    };
+
+    if (newFilter === "Inquiries") {
+      setIsAutoReplyEnabled(true);
+    } else {
+      setIsAutoReplyEnabled(false);
+    }
+    
+    fetchEmails(params);
   };
 
-  const handleAutoReply = () => {
-    setIsAutoReplyEnabled(!isAutoReplyEnabled);
+  const handleAutoReply = async () => {
+    setIsLoading(true);
+    try {
+      const accessToken = localStorage.getItem("gmail_access_token");
+      if (!accessToken) {
+        toast.error("Access token not found. Please log in again.");
+        return;
+      }
+      await aiResponseStore.triggerAutoReply(accessToken);
+      setIsAutoReplyEnabled(!isAutoReplyEnabled);
+    } catch (error) {
+      console.error("Error triggering auto-reply:", error);
+      toast.error("Failed to trigger auto-reply");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePageChange = (value) => {

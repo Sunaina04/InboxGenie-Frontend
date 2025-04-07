@@ -67,7 +67,7 @@ class AuthStore {
       });
   };
 
-  fetchEmails = async ({ inquire = false }) => {
+  fetchEmails = async ({ inquiry = false, support = false, grievance = false }) => {
     runInAction(() => {
       this.isLoadingEmails = true;
     });
@@ -78,7 +78,11 @@ class AuthStore {
       }
 
       const response = await axios.get("/emails/", {
-        params: { inquire },
+        params: { 
+          inquiry,
+          support,
+          grievance
+        },
         headers: {
           Authorization: `Bearer ${accessToken}`
         }
@@ -196,10 +200,10 @@ class AuthStore {
         toast.success("Successfully logged in with Google");
         
         // Fetch emails after successful login
-        await this.fetchEmails({ inquire: false });
+        await this.fetchEmails({ inquiry: false });
         
         if (navigate) {
-          navigate("/inbox");
+          navigate("/inbox", { replace: true });
         }
       } else {
         toast.error("Failed to log in with Google");
@@ -212,11 +216,26 @@ class AuthStore {
 
   logout = ({ callback }) => {
     runInAction(() => {
-      localStorage.clear();
+      // Clear all local storage items
+      localStorage.removeItem("email");
+      localStorage.removeItem("sentEmails");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("role");
+      localStorage.removeItem("gmail_access_token");
+      localStorage.removeItem("google_refresh_token");
+      localStorage.removeItem("token_timestamp");
+      
+      // Clear store state
       this.user = {};
-      const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1];
-      axios.defaults.headers.common["X-CSRFToken"] = csrfToken;
-      // axios.get("/auth/logout", { withCredentials: true });
+      this.emails = [];
+      this.isLoadingEmails = false;
+      this.isLoadingUser = false;
+      this.isLoadingLogin = false;
+
+      // Clear axios default headers
+      delete axios.defaults.headers.common["Authorization"];
+      
+      // Execute callback if provided
       callback && callback();
     });
   };

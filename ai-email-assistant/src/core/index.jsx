@@ -5,8 +5,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import { privatePaths, publicPaths } from "../config/routes";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
-
-const LoginPage = lazy(() => import("../pages/login"));
+import LoginPage from "../pages/login";
 
 const Inbox = lazy(() => import("../pages/inbox"));
 const EmailDetail = lazy(() => import("../pages/emailDetail"));

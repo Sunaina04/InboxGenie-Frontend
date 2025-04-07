@@ -55,21 +55,25 @@ class AIResponseStore {
     }
   };
 
-  triggerAutoReply = async () => {
+  triggerAutoReply = async (accessToken) => {
     runInAction(() => {
       this.isAutoReplyLoading = true;
       this.autoReplyStatus = "";
     });
 
     try {
-      const response = await axios.post("/auto-reply-inquiries/", {
-        send_auto_reply: true,
-      });
+      const response = await axios.post("/auto-reply-inquiries/", 
+        { send_auto_reply: true },
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        }
+      );
 
       if (response.status === 200) {
         runInAction(() => {
-          this.autoReplyStatus =
-            response.data.message || "Auto-reply triggered successfully!";
+          this.autoReplyStatus = response.data.message || "Auto-reply triggered successfully!";
         });
         toast.success("Auto-reply triggered successfully!");
       } else {

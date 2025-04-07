@@ -33,13 +33,20 @@ const Login = () => {
         );
 
         const { id_token, access_token, refresh_token, expires_in } = response.data;
-        console.log("ID Token:", id_token);
-        console.log("Access Token:", access_token);
+        console.log("Tokens received:", { id_token, access_token, refresh_token, expires_in });
 
-        // Store tokens and timestamp
+        // Store all tokens and timestamp
         localStorage.setItem("gmail_access_token", access_token);
         localStorage.setItem("google_refresh_token", refresh_token);
         localStorage.setItem("token_timestamp", Date.now().toString());
+        localStorage.setItem("role", "admin");
+
+        // Log to verify storage
+        console.log("Stored tokens:", {
+          access_token: localStorage.getItem("gmail_access_token"),
+          refresh_token: localStorage.getItem("google_refresh_token"),
+          timestamp: localStorage.getItem("token_timestamp")
+        });
 
         await authStore.handleGoogleToken(id_token, access_token, navigate);
       } catch (error) {
