@@ -148,17 +148,18 @@ const EmailCard = ({
 
       {/* Email Body */}
       <Typography
-        variant="body2"
+        variant="body1"
         sx={{
-          color: "#a0a0a0",
-          fontSize: "12px",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "200px",
+          color: "#444",
+          lineHeight: 1.6,
+          fontSize: "14px",
+          ml: 2,
+          mt: 4,
+          mb: 6,
+          whiteSpace: "pre-line",
         }}
       >
-        {email.body.length > 50 ? `${email.body.substring(0, 50)}...` : email.body}
+        {email.body}
       </Typography>
 
       <Divider sx={{ my: 2 }} />

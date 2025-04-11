@@ -51,8 +51,11 @@ const EmailItem = ({ email, onSelect, onClick }) => {
   };
 
   const handleClick = (e) => {
-    if (onClick) {
-      onClick(email.id);
+    // Prevent opening the email if the checkbox is clicked
+    if (e.target.type !== "checkbox") {
+      if (onClick) {
+        onClick(email.id); // Open email only if not clicking the checkbox
+      }
     }
   };
 
@@ -77,12 +80,12 @@ const EmailItem = ({ email, onSelect, onClick }) => {
           checked={email.isSelected}
           onChange={(e) => {
             e.stopPropagation();
-            onSelect(email.id);
+            onSelect(email.id); // Call the onSelect function to handle selection
           }}
-          sx={{
-            color: "#202124",
+          sx={{          
+            color: "#D9D9D9",
             "&.Mui-checked": {
-              color: "#007aff",
+              color: "#D9D9D9",
             },
             "&:hover": {
               backgroundColor: "transparent",
@@ -98,26 +101,42 @@ const EmailItem = ({ email, onSelect, onClick }) => {
                 sx={{
                   fontWeight: email.is_read ? 400 : 600,
                   color: "#202124",
-                  fontSize: "15px",
+                  fontSize: "14px",
                   minWidth: "180px",
                 }}
               >
                 {getSenderName(displayEmail)}
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex", flexDirection: "row", gap: 4, alignItems: "baseline" }}>
               <Typography
                 variant="caption"
                 sx={{
                   color: "#5f6368",
-                  fontSize: "14px",
+                  fontSize: "15px",
                   fontWeight: 600,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
-                  textOverflow: "ellipsis"
+                  textOverflow: "ellipsis",
+                  maxWidth: "350px",
                 }}
               >
-                {email.subject}
+                {email.subject} -
+              </Typography>
+
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "#5f6368",
+                  paddingLeft: 2,
+                  fontSize: "14px",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: "500px",
+                }}
+              >
+                {email.body || "No content available."}
               </Typography>
             </Box>
           </Box>
@@ -144,7 +163,11 @@ const EmailItem = ({ email, onSelect, onClick }) => {
           {email.is_read ? "Active" : "Inactive"}
         </Button>
 
-        <Typography variant="caption" sx={{ color: "#5f6368", minWidth: "100px" }}>
+        <Typography variant="caption" 
+          sx={{ 
+            color: "#5f6368",
+            minWidth: "50px"
+            }}>
           {formatDate(email.date)}
         </Typography>
 

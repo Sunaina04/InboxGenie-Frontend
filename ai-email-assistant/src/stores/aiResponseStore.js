@@ -55,15 +55,17 @@ class AIResponseStore {
     }
   };
 
-  triggerAutoReply = async (accessToken) => {
+  triggerAutoReply = async (accessToken, emails) => {
     runInAction(() => {
       this.isAutoReplyLoading = true;
       this.autoReplyStatus = "";
     });
 
     try {
-      const response = await axios.post("/auto-reply-inquiries/", 
-        { send_auto_reply: true },
+      const response = await axios.post("/auto-reply-emails/", 
+        { send_auto_reply: true,
+          emails: emails,
+        },
         {
           headers: {
             'Authorization': `Bearer ${accessToken}`

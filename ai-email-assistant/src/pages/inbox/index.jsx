@@ -62,8 +62,14 @@ const Inbox = observer(() => {
       email.id === emailId ? { ...email, isSelected: !email.isSelected } : email
     );
     setEmails(updatedEmails);
-    setSelectedEmails(updatedEmails.filter((email) => email.isSelected));
+
+    // Compute selectedEmails from updatedEmails (not old emails state)
+    const selected = updatedEmails.filter((email) => email.isSelected);
+    setSelectedEmails(selected);
+    setIsAutoReplyEnabled(selected.length > 0);
+    console.log(selected);
   };
+
 
   const handleEmailClick = (emailId) => {
     const clickedEmail = emails.find((email) => email.id === emailId);
@@ -77,19 +83,19 @@ const Inbox = observer(() => {
 
   const handleFilterChange = (newFilter) => {
     setFilter(newFilter);
-    
+
     const params = {
       inquiry: newFilter === "Inquiries",
       support: newFilter === "Support",
       grievance: newFilter === "Grievances"
     };
 
-    if (newFilter === "Inquiries") {
-      setIsAutoReplyEnabled(true);
-    } else {
-      setIsAutoReplyEnabled(false);
-    }
-    
+    // if (newFilter === "Inquiries") {
+    //   setIsAutoReplyEnabled(true);
+    // } else {
+    //   setIsAutoReplyEnabled(false);
+    // }
+
     fetchEmails(params);
   };
 
@@ -101,7 +107,7 @@ const Inbox = observer(() => {
         toast.error("Access token not found. Please log in again.");
         return;
       }
-      await aiResponseStore.triggerAutoReply(accessToken);
+      await aiResponseStore.triggerAutoReply(accessToken, selectedEmails);
       setIsAutoReplyEnabled(!isAutoReplyEnabled);
     } catch (error) {
       console.error("Error triggering auto-reply:", error);
@@ -120,89 +126,75 @@ const Inbox = observer(() => {
   const currentEmails = emails?.slice(indexOfFirstEmail, indexOfLastEmail);
 
   return (
-   <>
-      {/* <Container sx={{
-        flex: 1,
-        // marginLeft: "20px",
-        // marginRight: "20px",
-        padding: "16px",
-        // width: "100%",
-      }}> */}
-        <Box display="flex" alignItems="center" marginBottom={2}>
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
-          >
-            INBOX
-          </Typography>
-          <Box display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}>
-            <Button
-              variant="text"
-              startIcon={<MarkEmailRead sx={{ color: "#9e9b9b" }} />}
-              sx={{
-                color: "#9e9b9b",
-                padding: "4px 8px",
-                marginLeft: "20px",
-                minWidth: "150px",  
-                fontSize: "14px",
-                backgroundColor: "#F9FBFF",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.2)",
-                }
-              }}
-            >
-              Mark as Read
-            </Button>
-            <Button
-              variant="text"
-              startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
-              sx={{
-                color: "#9e9b9b",
-                padding: "4px 8px",
-                marginLeft: "20px",
-                fontSize: "16px",
-                minWidth: "150px",
-                backgroundColor: "#F9FBFF",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.2)",
-                }
-              }}
-            >
-              Delete
-            </Button>
-            <EmailFilter filter={filter} setFilter={handleFilterChange} />
-            <AutoReplyButton isEnabled={isAutoReplyEnabled} onClick={handleAutoReply} />
-          </Box>
-        </Box>
+    <>
+      <Box display="flex" alignItems="center" marginBottom={2}>
         <Typography
-          variant="h6"
-          color="primary"
-          sx={{ fontWeight: 500, marginBottom: "16px", color: "#0848d1" }}
+          variant="h4"
+          sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
         >
-          Primary Mails
+          INBOX
         </Typography>
-        <List
-          sx={{
-            // background: "white",
-            // borderRadius: "12px",           
-            // width: "1400px",
-            // boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          }}
-        >
-          {currentEmails?.map((email) => (
-            <EmailItem
-              key={email.id}
-              email={email}
-              onSelect={handleSelectEmail}
-              onClick={handleEmailClick}
-            />
-          ))}
-        </List>
-        <CustomPagination
-          count={Math.ceil(emails.length / emailsPerPage)}
-          page={currentPage}
-          onChange={handlePageChange}
-        />
+        <Box display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}>
+          <Button
+            variant="text"
+            startIcon={<MarkEmailRead sx={{ color: "#9e9b9b" }} />}
+            sx={{
+              color: "#9e9b9b",
+              padding: "4px 8px",
+              marginLeft: "20px",
+              minWidth: "150px",
+              fontSize: "14px",
+              backgroundColor: "#F9FBFF",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              }
+            }}
+          >
+            Mark as Read
+          </Button>
+          <Button
+            variant="text"
+            startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
+            sx={{
+              color: "#9e9b9b",
+              padding: "4px 8px",
+              marginLeft: "20px",
+              fontSize: "16px",
+              minWidth: "150px",
+              backgroundColor: "#F9FBFF",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              }
+            }}
+          >
+            Delete
+          </Button>
+          <EmailFilter filter={filter} setFilter={handleFilterChange} />
+          <AutoReplyButton isEnabled={isAutoReplyEnabled} onClick={handleAutoReply} />
+        </Box>
+      </Box>
+      <Typography
+        variant="h6"
+        color="primary"
+        sx={{ fontWeight: 500, marginBottom: "16px", color: "#0848d1" }}
+      >
+        Primary Mails
+      </Typography>
+      <List>
+        {currentEmails?.map((email) => (
+          <EmailItem
+            key={email.id}
+            email={email}
+            onSelect={handleSelectEmail}
+            onClick={handleEmailClick}
+          />
+        ))}
+      </List>
+      <CustomPagination
+        count={Math.ceil(emails.length / emailsPerPage)}
+        page={currentPage}
+        onChange={handlePageChange}
+      />
       {/* </Container> */}
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
