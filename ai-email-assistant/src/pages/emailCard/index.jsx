@@ -11,9 +11,12 @@ import {
 import { Reply } from "@mui/icons-material";
 import ReplySection from "../replySection";
 import aiResponseStore from "../../stores/aiResponseStore";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { observer } from 'mobx-react-lite';
+import ForwardIcon from '@mui/icons-material/Forward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const EmailCard = ({
+const EmailCard = observer(({
   email,
   handleAIResponse,
   handleReply,
@@ -23,6 +26,7 @@ const EmailCard = ({
   const [aiResponse, setAIResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isSentMail = location.pathname === "/sent" || location.pathname.includes("/sent_email");
 
   const generateAIResponse = () => {
@@ -39,61 +43,65 @@ const EmailCard = ({
       });
   };
 
+  const handleAutoReply = async () => {
+    try {
+      await aiResponseStore.sendAutoReply([email.id]);
+      console.log("Auto reply sent to:", email.id);
+    } catch (error) {
+      console.error("Error sending auto reply:", error);
+    }
+  };
+
   // Updated function to extract name and email
   const getSenderInfo = (emailString) => {
-    if (!emailString) return { name: '', email: '' };
+    // Use a regular expression to extract the name and email
+    const regex = /^(.*) <(.*)>$/;
+    const match = emailString.match(regex);
 
-    // Remove angular brackets if present
-    const cleanEmail = emailString.replace(/[<>]/g, '');
-
-    // Check if the email contains a name in the format "Name <email@example.com>"
-    const nameMatch = emailString.match(/"([^"]+)"\s*<(.+)>/);
-    if (nameMatch) {
+    if (match) {
       return {
-        name: nameMatch[1],
-        email: nameMatch[2]
+        name: match[1].trim(), // Extracted name
+        email: match[2].trim(), // Extracted email
       };
     }
 
-    // Check for format "Name email@example.com"
-    const spaceMatch = cleanEmail.match(/^([^@\s]+)\s+([^@\s]+@[^@\s]+\.[^@\s]+)$/);
-    if (spaceMatch) {
-      return {
-        name: spaceMatch[1],
-        email: spaceMatch[2]
-      };
-    }
-
-    // If no name found, return the email as both name and email
+    // Fallback if the format is not as expected
     return {
-      name: cleanEmail,
-      email: cleanEmail
+      name: "Unknown Sender",
+      email: "unknown@example.com",
     };
   };
 
   // Get sender info based on path
   const senderInfo = isSentMail ? getSenderInfo(email.to) : getSenderInfo(email.from);
+  console.log(senderInfo)
 
   return (
-    <Paper
-      sx={{
-        padding: "24px",
-        borderRadius: "8px",
-        backgroundColor: "#ffffff",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        mb: 3,
-        width: "100%",
-        mx: "auto",
-        borderTop: "3px solid #554FEB",
-      }}
-    >
+    <>
+      {/* Back Button */}
+      <Button
+        onClick={() => navigate('/inbox')}
+        sx={{
+          marginBottom: 4,
+          color: "#666",
+          textTransform: "none",
+          "&:hover": {
+                backgroundColor: "#e0e0e0",
+              },
+        }}
+        startIcon={<ArrowBackIcon sx={{ color: "#666", fontSize: "18px", marginRight: "5px"}}  />}
+      >
+       Back 
+      </Button>
+
       {/* Header Section */}
-      <Box display="flex" alignItems="center" mb={2}>
+      <Box display="flex" alignItems="center" mb={4}>
         <Avatar
           sx={{
             width: 40,
             height: 40,
-            bgcolor: "#554FEB",
+            color: "#1C1F26",
+            bgcolor: "#EFEFEF",
             marginRight: "16px",
           }}
         >
@@ -206,8 +214,30 @@ const EmailCard = ({
                 border: "none",
               },
             }}
+            startIcon={<ForwardIcon sx={{ color: "#666", fontSize: "18px" }} />}
           >
             Generate AI Response
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleAutoReply}
+            sx={{
+              backgroundColor: "#007aff",
+              color: "#fff",
+              textTransform: "none",
+              borderRadius: "8px",
+              border: "none",
+              padding: "4px 12px",
+              minWidth: "auto",
+              fontSize: "14px",
+              "&:hover": {
+                backgroundColor: "#e0e0e0",
+                border: "none",
+              },
+
+            }}
+          >
+            Auto Reply
           </Button>
         </Box>
       )}
@@ -227,8 +257,8 @@ const EmailCard = ({
           handleSendEmail={handleSendEmail}
         />
       )}
-    </Paper>
+    </>
   );
-};
+});
 
 export default EmailCard;

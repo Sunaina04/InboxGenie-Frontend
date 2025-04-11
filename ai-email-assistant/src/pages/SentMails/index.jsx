@@ -64,78 +64,68 @@ const SentMails = observer(() => {
     setCurrentPage(value);
   };
 
+  const totalItems = sentEmails.length;
+  const totalPages = Math.ceil(totalItems / emailsPerPage); // Calculate total pages
+
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
-  const currentSentEmails = sentEmails?.slice(indexOfFirstEmail, indexOfLastEmail);
+  const currentSentEmails = sentEmails.slice(indexOfFirstEmail, indexOfLastEmail);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: "#f4f5f7",
-        height: "100vh",
-        width: "calc(100% - 20px)",
-      }}
-    >
-      <Container sx={{
-        flex: 1,
-        marginLeft: "20px",
-        marginRight: "20px",
-        padding: "16px",
-        maxWidth: "100%",
-      }}>
-        <Box display="flex" alignItems="center" marginBottom={2}>
-          <Typography
-            variant="h4"
-            sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
-          >
-            Sent Mails
-          </Typography>
-          <Box display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}>
-            <Button
-              variant="text"
-              startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
-              sx={{
-                color: "#9e9b9b",
-                padding: "4px 8px",
-                marginLeft: "20px",
-                fontSize: "14px",
-                minWidth: "150px",
-                backgroundColor: "#e8e6e6",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.2)",
-                }
-              }}
-            >
-              Delete
-            </Button>
-          </Box>
-        </Box>
-        <List sx={{ padding: 0 }}>
-          {currentSentEmails?.map((email) => (
-            <EmailItem
-              key={email.id}
-              email={email}
-              onSelect={handleSelectEmail}
-              onClick={handleEmailClick}
-              onDelete={handleDeleteEmail}
-            />
-          ))}
-        </List>
-        <CustomPagination
-          count={Math.ceil(sentEmails.length / emailsPerPage)}
-          page={currentPage}
-          onChange={handlePageChange}
-        />
-        <Backdrop
-          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={authStore.isLoadingEmails}
+    <>
+      <Box display="flex" alignItems="center" marginBottom={2}>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
         >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </Container>
-    </Box>
+          Sent Mails
+        </Typography>
+        <Box display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}>
+          <Button
+            variant="text"
+            startIcon={<Delete sx={{ color: "#9e9b9b" }} />}
+            sx={{
+              color: "#9e9b9b",
+              padding: "4px 8px",
+              marginLeft: "20px",
+              fontSize: "14px",
+              minWidth: "150px",
+              backgroundColor: "#e8e6e6",
+              "&:hover": {
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              }
+            }}
+            onClick={handleBulkDelete} // Add bulk delete functionality
+          >
+            Delete
+          </Button>
+        </Box>
+      </Box>
+      <List sx={{ padding: 0 }}>
+        {currentSentEmails.map((email) => (
+          <EmailItem
+            key={email.id}
+            email={email}
+            onSelect={handleSelectEmail}
+            onClick={handleEmailClick}
+            onDelete={handleDeleteEmail}
+          />
+        ))}
+      </List>
+      <CustomPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={emailsPerPage}
+        onPageChange={handlePageChange}
+      />
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={authStore.isLoadingEmails}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </>
   );
 });
 

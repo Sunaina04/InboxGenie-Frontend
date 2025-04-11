@@ -124,6 +124,8 @@ const Inbox = observer(() => {
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
   const currentEmails = emails?.slice(indexOfFirstEmail, indexOfLastEmail);
+  const totalItems = emails.length;
+  const totalPages = Math.ceil(totalItems / emailsPerPage); 
 
   return (
     <>
@@ -191,11 +193,13 @@ const Inbox = observer(() => {
         ))}
       </List>
       <CustomPagination
-        count={Math.ceil(emails.length / emailsPerPage)}
-        page={currentPage}
-        onChange={handlePageChange}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        itemsPerPage={emailsPerPage}
+        onPageChange={handlePageChange}
       />
-      {/* </Container> */}
+     
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}

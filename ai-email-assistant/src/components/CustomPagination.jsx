@@ -1,33 +1,62 @@
-import React from "react";
-import { Pagination as MuiPagination } from "@mui/material";
+import React from 'react';
+import Pagination from '@mui/material/Pagination';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-const CustomPagination = ({ count, page, onChange }) => {
+export default function CustomPagination({
+  currentPage = 1,
+  totalPages = 1,
+  totalItems = 0,
+  itemsPerPage = 10,
+  onPageChange
+}) {
+  const handlePageChange = (event, value) => {
+    onPageChange(value);
+  };
+
   return (
-    <MuiPagination
-      count={count}
-      page={page}
-      onChange={onChange}
-      showFirstButton
-      showLastButton
-      sx={{
-        marginTop: "16px",
-        display: "flex",
-        justifyContent: "center",
-        "& .MuiPaginationItem-root": {
-          backgroundColor: "transparent", // Default background
-          color: "#fff", // Text color
-        },
-        "& .MuiPaginationItem-root.Mui-selected": {
-          backgroundColor: "#554FEB", // Highlighted page number background
-          color: "#fff", // Highlighted page number text color
-        },
-        "& .MuiPaginationItem-previousNext": {
-          backgroundColor: "transparent", // Keep previous/next buttons unchanged
-          color: "#fff", // Text color for previous/next buttons
-        },
-      }}
-    />
-  );
-};
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      width="100%"
+      mt={4}
+    >
+      {/* Left Section */}
+      <Box flex={1}>
+        <Typography variant="body2" color="#B7AEAE">
+          {totalItems === 0
+            ? "No entries to display"
+            : `Showing ${((currentPage - 1) * itemsPerPage) + 1} to ${Math.min(currentPage * itemsPerPage, totalItems)} of ${totalItems} entries`}
+        </Typography>
+      </Box>
 
-export default CustomPagination;
+      {/* Center Section */}
+      <Box flex={1} display="flex" justifyContent="center">
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handlePageChange}
+          variant="contained"
+          shape="rounded"
+          size="small"
+          sx={{
+            '& .MuiPaginationItem-root': {
+              color: 'gray',
+            },
+            '& .MuiPaginationItem-root.Mui-selected': {
+              backgroundColor: '#554FEB',
+              color: 'white',
+            },
+            '& .MuiPaginationItem-root:hover': {
+              backgroundColor: 'rgba(0, 123, 255, 0.1)',
+            },
+          }}
+        />
+      </Box>
+
+
+      <Box flex={1} />
+    </Box>
+  );
+}

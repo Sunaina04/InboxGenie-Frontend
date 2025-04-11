@@ -67,37 +67,30 @@ const EmailDetail = () => {
   };
 
   return (
-    <Container
-      sx={{
-        maxWidth: "100%",
-        padding: "24px 0",
+    <>
+
+      <Box sx={{
+        flex: 1,
         width: "100%",
+        padding: "24px 24px",
+        maxWidth: "100%",
         margin: 0,
-      }}
-    >
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        <Box sx={{
-          flex: 1,
-          width: "100%",
-          padding: "24px 0",
-          maxWidth: "100%",
-          margin: 0,
-        }}>
-          {email ? (
-            <EmailCard
-              key={email.id}
-              email={email}
-              handleAIResponse={!isInbox ? handleAIResponse : null}
-              handleReply={!isInbox ? handleAIResponse : null}
-              handleSendEmail={handleSendEmail}
-            />
-          ) : (
-            <Typography variant="body1" color="textSecondary" align="center">
-              No email selected.
-            </Typography>
-          )}
-        </Box>
+      }}>
+        {email ? (
+          <EmailCard
+            key={email.id}
+            email={email}
+            handleAIResponse={!isInbox ? handleAIResponse : null}
+            handleReply={!isInbox ? handleAIResponse : null}
+            handleSendEmail={handleSendEmail}
+          />
+        ) : (
+          <Typography variant="body1" color="textSecondary" align="center">
+            No email selected.
+          </Typography>
+        )}
       </Box>
+
 
       {loading && (
         <Box
@@ -127,7 +120,8 @@ const EmailDetail = () => {
         handleEdit={() => alert("Edit")}
         handleSend={handleSendEmail}
       />
-    </Container>
+
+    </>
   );
 };
 
