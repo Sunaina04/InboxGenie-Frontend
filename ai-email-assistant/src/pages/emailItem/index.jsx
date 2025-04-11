@@ -61,8 +61,6 @@ const EmailItem = ({ email, onSelect, onClick }) => {
       button
       onClick={handleClick}
       sx={{
-        width: "100%",
-        padding: "12px 16px",
         borderBottom: "1px solid #e0e0e0",
         display: "flex",
         alignItems: "center",
@@ -71,7 +69,6 @@ const EmailItem = ({ email, onSelect, onClick }) => {
         "&:hover": {
           backgroundColor: email.is_read ? "#f1f3f4" : "#f5f5f5",
         },
-        borderLeft: email.is_read ? "none" : "4px solid #007aff",
         cursor: "pointer",
       }}
     >
@@ -102,7 +99,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
                   fontWeight: email.is_read ? 400 : 600,
                   color: "#202124",
                   fontSize: "15px",
-                  minWidth: "150px",
+                  minWidth: "180px",
                 }}
               >
                 {getSenderName(displayEmail)}
@@ -127,28 +124,27 @@ const EmailItem = ({ email, onSelect, onClick }) => {
         </Box>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2, paddingLeft: 2 }}>
         <Button
           variant="outlined"
           sx={{
             borderRadius: "8px",
             borderColor: email.is_read ? "blue" : "red",
             color: email.is_read ? "white" : "red",
-            backgroundColor: email.is_read ? "#007bff" : "rgba(255, 0, 0, 0.1)", // Blue for active, slight red for inactive
-            marginRight: 2,
-            padding: "4px 8px", // Reduced padding for smaller button
-            fontSize: "12px", // Reduced font size
-            minWidth: "80px", // Reduced min width
+            backgroundColor: email.is_read ? "#007bff" : "rgba(255, 0, 0, 0.1)",
+            padding: "4px 8px",
+            fontSize: "12px",
+            minWidth: "80px",
             "&:hover": {
-              backgroundColor: email.is_read ? "#007bff" : "rgba(255, 0, 0, 0.1)", // Keep the same background on hover
-              borderColor: email.is_read ? "blue" : "red", // Keep the same border color on hover
+              backgroundColor: email.is_read ? "#007bff" : "rgba(255, 0, 0, 0.1)",
+              borderColor: email.is_read ? "blue" : "red",
             },
           }}
         >
           {email.is_read ? "Active" : "Inactive"}
         </Button>
 
-        <Typography variant="caption" sx={{ color: "#5f6368" }}>
+        <Typography variant="caption" sx={{ color: "#5f6368", minWidth: "100px" }}>
           {formatDate(email.date)}
         </Typography>
 

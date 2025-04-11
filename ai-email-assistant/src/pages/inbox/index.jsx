@@ -120,22 +120,14 @@ const Inbox = observer(() => {
   const currentEmails = emails?.slice(indexOfFirstEmail, indexOfLastEmail);
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: "#f4f5f7",
-        height: "100vh",
-        width: "calc(100% - 20px)",
-      }}
-    >
-      <Container sx={{
+   <>
+      {/* <Container sx={{
         flex: 1,
-        marginLeft: "20px",
-        marginRight: "20px",
+        // marginLeft: "20px",
+        // marginRight: "20px",
         padding: "16px",
-        maxWidth: "100%",
-      }}>
+        // width: "100%",
+      }}> */}
         <Box display="flex" alignItems="center" marginBottom={2}>
           <Typography
             variant="h4"
@@ -151,9 +143,9 @@ const Inbox = observer(() => {
                 color: "#9e9b9b",
                 padding: "4px 8px",
                 marginLeft: "20px",
-                minWidth: "150px",
+                minWidth: "150px",  
                 fontSize: "14px",
-                backgroundColor: "#e8e6e6",
+                backgroundColor: "#F9FBFF",
                 "&:hover": {
                   backgroundColor: "rgba(0, 0, 0, 0.2)",
                 }
@@ -168,9 +160,9 @@ const Inbox = observer(() => {
                 color: "#9e9b9b",
                 padding: "4px 8px",
                 marginLeft: "20px",
-                fontSize: "14px",
+                fontSize: "16px",
                 minWidth: "150px",
-                backgroundColor: "#e8e6e6",
+                backgroundColor: "#F9FBFF",
                 "&:hover": {
                   backgroundColor: "rgba(0, 0, 0, 0.2)",
                 }
@@ -191,10 +183,10 @@ const Inbox = observer(() => {
         </Typography>
         <List
           sx={{
-            background: "white",
-            borderRadius: "12px",
-            padding: "16px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+            // background: "white",
+            // borderRadius: "12px",           
+            // width: "1400px",
+            // boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
           }}
         >
           {currentEmails?.map((email) => (
@@ -211,14 +203,14 @@ const Inbox = observer(() => {
           page={currentPage}
           onChange={handlePageChange}
         />
-      </Container>
+      {/* </Container> */}
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-    </Box>
+    </>
   );
 });
 

@@ -4,11 +4,11 @@ import { privatePaths } from "../config/routes";
 import toast, { Toaster } from "react-hot-toast";
 import { getValidToken } from "../utils/tokenUtils";
 
-const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
-const { REACT_APP_GOOGLE_REDIRECT_URI } = process.env;
+// const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
+// const { REACT_APP_GOOGLE_REDIRECT_URI } = process.env;
 
-const googleClientId = `${REACT_APP_GOOGLE_CLIENT_ID}`;
-const redirectUri = `${REACT_APP_GOOGLE_REDIRECT_URI}`;
+// const googleClientId = `${REACT_APP_GOOGLE_CLIENT_ID}`;
+// const redirectUri = `${REACT_APP_GOOGLE_REDIRECT_URI}`;
 
 class AuthStore {
   user = {};
@@ -16,6 +16,8 @@ class AuthStore {
   isLoadingEmails = false;
   isLoadingUser = false;
   isLoadingLogin = false;
+  manuals = [];
+  isLoadingManuals = false;
 
   constructor() {
     makeObservable(this, {
@@ -239,7 +241,103 @@ class AuthStore {
       callback && callback();
     });
   };
+
+  uploadManual = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      const accessToken = await getValidToken();
+      if (!accessToken) {
+        throw new Error("No valid access token found");
+      }
+  
+      const response = await axios.post('/api/manuals/', formData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+  
+      // If successful, response.data has the result
+      runInAction(() => {
+        this.manuals = [...this.manuals, response.data];
+      });
+  
+      toast.success('Manual uploaded successfully!');
+      return response.data;
+  
+    } catch (error) {
+      console.error('Error uploading manual:', error);
+      toast.error(error.response?.data?.message || 'Failed to upload manual');
+      throw error;
+    }
+  };
+  
 }
+
+  
+
+  // Function to fetch all manuals
+  // fetchManuals = async () => {
+  //   runInAction(() => {
+  //     this.isLoadingManuals = true;
+  //   });
+
+  //   try {
+  //     const response = await fetch('/api/manuals/', {
+  //       headers: {
+  //         'Authorization': `Bearer ${this.accessToken}`,
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch manuals');
+  //     }
+
+  //     const data = await response.json();
+      
+  //     runInAction(() => {
+  //       this.manuals = data;
+  //       this.isLoadingManuals = false;
+  //     });
+
+  //     return data;
+  //   } catch (error) {
+  //     console.error('Error fetching manuals:', error);
+  //     toast.error('Failed to fetch manuals');
+  //     runInAction(() => {
+  //       this.isLoadingManuals = false;
+  //     });
+  //     throw error;
+  //   }
+  // };
+
+  // Function to delete a manual
+  // deleteManual = async (id) => {
+  //   try {
+  //     const response = await fetch(`/api/manuals/${id}/`, {
+  //       method: 'DELETE',
+  //       headers: {
+  //         'Authorization': `Bearer ${this.accessToken}`,
+  //       },
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to delete manual');
+  //     }
+
+  //     runInAction(() => {
+  //       this.manuals = this.manuals.filter(manual => manual.id !== id);
+  //     });
+
+  //     toast.success('Manual deleted successfully!');
+  //   } catch (error) {
+  //     console.error('Error deleting manual:', error);
+  //     toast.error('Failed to delete manual');
+  //     throw error;
+  //   }
+  // };
 
 const authStore = new AuthStore();
 export default authStore;

@@ -10,10 +10,15 @@ import LoginPage from "../pages/login";
 const Inbox = lazy(() => import("../pages/inbox"));
 const EmailDetail = lazy(() => import("../pages/emailDetail"));
 const SentMails = lazy(() => import("../pages/SentMails"));
+const HomePage = lazy(() => import("../pages/home"));
 
 const publicRoutes = [{ path: publicPaths.login, Component: <LoginPage /> }];
 
 const privateRoutes = [
+  {
+    path: privatePaths.home,
+    Component: <HomePage />,
+  },
   {
     path: privatePaths.inbox,
     Component: <Inbox />,

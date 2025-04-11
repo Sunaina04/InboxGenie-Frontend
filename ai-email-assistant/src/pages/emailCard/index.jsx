@@ -83,7 +83,6 @@ const EmailCard = ({
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         mb: 3,
         width: "100%",
-        maxWidth: "1200px",
         mx: "auto",
         borderTop: "3px solid #554FEB",
       }}
@@ -149,18 +148,17 @@ const EmailCard = ({
 
       {/* Email Body */}
       <Typography
-        variant="body1"
+        variant="body2"
         sx={{
-          color: "#444",
-          lineHeight: 1.6,
-          fontSize: "14px",
-          ml: 2,
-          mt: 4,
-          mb: 6,
-          whiteSpace: "pre-line",
+          color: "#a0a0a0",
+          fontSize: "12px",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "200px",
         }}
       >
-        {email.body}
+        {email.body.length > 50 ? `${email.body.substring(0, 50)}...` : email.body}
       </Typography>
 
       <Divider sx={{ my: 2 }} />

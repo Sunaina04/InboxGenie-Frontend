@@ -2,6 +2,7 @@ import { SendOutlined, Settings, DraftsOutlined } from "@mui/icons-material";
 import { privatePaths } from "../../config/routes";
 import InboxIcon from "@mui/icons-material/Inbox";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import HomePage from "../../pages/home";
 // import CreateIcon from "@mui/icons-material/Create";
 // import SettingsIcon from "@mui/icons-material/Settings";
 
@@ -10,14 +11,14 @@ export const menuOptions = () => [
     id: "mainPage",
     menuTitle: "Home",
     icon: <MailOutlineIcon />,
-    path: privatePaths.dashbaord,
+    path: privatePaths.home,
   },
-
+ 
   {
     id: "inbox",
     menuTitle: "Inbox",
-    path: privatePaths.inbox, // Define this path in your routes
-    icon: <InboxIcon />, // Use MUI icon
+    path: privatePaths.inbox,
+    icon: <InboxIcon />,
     path: privatePaths.inbox,
   },
   {
