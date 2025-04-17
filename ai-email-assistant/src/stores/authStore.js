@@ -249,20 +249,21 @@ class AuthStore {
     try {
       const formData = new FormData();
       formData.append('file', file);
-  
-      const accessToken = await getValidToken();
-      if (!accessToken) {
-        throw new Error("No valid access token found");
+      formData.append('filename', file.name);  
+      
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      if (userInfo?.email) {
+        formData.append('email', userInfo.email);
+      } else {
+        throw new Error("User email not found in localStorage");
       }
-  
+    
       const response = await axios.post('/api/manuals/', formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+        headers: {         
           'Content-Type': 'multipart/form-data'
         }
       });
   
-      // If successful, response.data has the result
       runInAction(() => {
         this.manuals = [...this.manuals, response.data];
       });
@@ -272,10 +273,15 @@ class AuthStore {
   
     } catch (error) {
       console.error('Error uploading manual:', error);
-      toast.error(error.response?.data?.message || 'Failed to upload manual');
+      toast.error(
+        error.response?.status === 409
+          ? 'A manual with this filename already exists.'
+          : error.response?.data?.message || 'Failed to upload manual'
+      );
       throw error;
     }
   };
+  
   
 }
 
