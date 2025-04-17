@@ -18,12 +18,12 @@ import AutoReplyButton from "./components/AutoReplyButton";
 import CustomPagination from "../../components/CustomPagination";
 import { observer } from "mobx-react-lite";
 import { toast } from "react-hot-toast";
+import EmailTabs from './components/EmailTabs';
 
 const Inbox = observer(() => {
   const [emails, setEmails] = useState([]);
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filter, setFilter] = useState("All");
   const [emailsPerPage] = useState(8);
   const [isAutoReplyEnabled, setIsAutoReplyEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +46,17 @@ const Inbox = observer(() => {
       setIsLoading(false);
     }
   }, []);
-  // Initial fetch
+
+  const handleTabChange = (tab) => {
+    const params = {
+      primary: tab === 'primary',
+      inquiry: tab === 'inquiry',
+      support: tab === 'support',
+      grievance: tab === 'grievance'
+    };
+    fetchEmails(params);
+  };
+
   useEffect(() => {
     fetchEmails();
   }, [isAutoReplyEnabled]);
@@ -63,13 +73,10 @@ const Inbox = observer(() => {
     );
     setEmails(updatedEmails);
 
-    // Compute selectedEmails from updatedEmails (not old emails state)
     const selected = updatedEmails.filter((email) => email.isSelected);
     setSelectedEmails(selected);
-    setIsAutoReplyEnabled(selected.length > 0);
-    console.log(selected);
+    setIsAutoReplyEnabled(selected.length > 0);    
   };
-
 
   const handleEmailClick = (emailId) => {
     const clickedEmail = emails.find((email) => email.id === emailId);
@@ -79,24 +86,6 @@ const Inbox = observer(() => {
         replace: true
       });
     }
-  };
-
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-
-    const params = {
-      inquiry: newFilter === "Inquiries",
-      support: newFilter === "Support",
-      grievance: newFilter === "Grievances"
-    };
-
-    // if (newFilter === "Inquiries") {
-    //   setIsAutoReplyEnabled(true);
-    // } else {
-    //   setIsAutoReplyEnabled(false);
-    // }
-
-    fetchEmails(params);
   };
 
   const handleAutoReply = async () => {
@@ -124,28 +113,28 @@ const Inbox = observer(() => {
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
   const currentEmails = emails?.slice(indexOfFirstEmail, indexOfLastEmail);
-  const totalItems = emails.length;
-  const totalPages = Math.ceil(totalItems / emailsPerPage); 
-
+  const totalItems = (emails || []).length;
+  const totalPages = Math.ceil(totalItems / emailsPerPage);
+  console.log("emails", emails);
   return (
     <>
-      <Box display="flex" alignItems="center" marginBottom={2}>
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 700, color: "#333", marginBottom: "16px", marginRight: "16px" }}
-        >
-          INBOX
-        </Typography>
-        <Box display="flex" gap={1} sx={{ marginLeft: "50px", alignItems: "center" }}>
+      <Box display="flex" alignItems="center" justifyContent="space-between" gap={2} mb={2}>
+        <Box display="flex" alignItems="center" gap={2}>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 700, color: "#333" }}
+          >
+            INBOX
+          </Typography>
           <Button
             variant="text"
             startIcon={<MarkEmailRead sx={{ color: "#9e9b9b" }} />}
             sx={{
               color: "#9e9b9b",
               padding: "4px 8px",
-              marginLeft: "20px",
               minWidth: "150px",
               fontSize: "14px",
+              marginLeft: "80px",
               backgroundColor: "#F9FBFF",
               "&:hover": {
                 backgroundColor: "rgba(0, 0, 0, 0.2)",
@@ -160,7 +149,6 @@ const Inbox = observer(() => {
             sx={{
               color: "#9e9b9b",
               padding: "4px 8px",
-              marginLeft: "20px",
               fontSize: "16px",
               minWidth: "150px",
               backgroundColor: "#F9FBFF",
@@ -171,17 +159,18 @@ const Inbox = observer(() => {
           >
             Delete
           </Button>
-          <EmailFilter filter={filter} setFilter={handleFilterChange} />
+        </Box>
+
+        <Box
+          sx={{
+            marginRight: "20px"
+          }}
+        >
           <AutoReplyButton isEnabled={isAutoReplyEnabled} onClick={handleAutoReply} />
         </Box>
       </Box>
-      <Typography
-        variant="h6"
-        color="primary"
-        sx={{ fontWeight: 500, marginBottom: "16px", color: "#0848d1" }}
-      >
-        Primary Mails
-      </Typography>
+      <EmailTabs onTabChange={handleTabChange} />
+    
       <List>
         {currentEmails?.map((email) => (
           <EmailItem
@@ -199,7 +188,7 @@ const Inbox = observer(() => {
         itemsPerPage={emailsPerPage}
         onPageChange={handlePageChange}
       />
-     
+
       <Backdrop
         sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={isLoading}

@@ -68,7 +68,6 @@ const EmailDetail = () => {
 
   return (
     <>
-
       <Box sx={{
         flex: 1,
         width: "100%",
@@ -90,7 +89,6 @@ const EmailDetail = () => {
           </Typography>
         )}
       </Box>
-
 
       {loading && (
         <Box

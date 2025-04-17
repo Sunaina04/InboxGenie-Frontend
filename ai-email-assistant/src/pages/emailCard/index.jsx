@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { observer } from 'mobx-react-lite';
 import ForwardIcon from '@mui/icons-material/Forward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { toast } from "react-hot-toast";
 
 const EmailCard = observer(({
   email,
@@ -25,6 +26,7 @@ const EmailCard = observer(({
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const isSentMail = location.pathname === "/sent" || location.pathname.includes("/sent_email");
@@ -43,15 +45,31 @@ const EmailCard = observer(({
       });
   };
 
+  // const handleAutoReply = async () => {
+  //   try {
+  //     await aiResponseStore.sendAutoReply([email.id]);
+  //     console.log("Auto reply sent to:", email.id);
+  //   } catch (error) {
+  //     console.error("Error sending auto reply:", error);
+  //   }
+  // };
   const handleAutoReply = async () => {
+    setLoading(true);
     try {
-      await aiResponseStore.sendAutoReply([email.id]);
-      console.log("Auto reply sent to:", email.id);
+      const accessToken = localStorage.getItem("gmail_access_token");
+      if (!accessToken) {
+        toast.error("Access token not found. Please log in again.");
+        return;
+      }
+      await aiResponseStore.triggerAutoReply(accessToken, email);
+      // setIsAutoReplyEnabled(!isAutoReplyEnabled);
     } catch (error) {
-      console.error("Error sending auto reply:", error);
+      console.error("Error triggering auto-reply:", error);
+      toast.error("Failed to trigger auto-reply");
+    } finally {
+      setLoading(false);
     }
   };
-
   // Updated function to extract name and email
   const getSenderInfo = (emailString) => {
     // Use a regular expression to extract the name and email

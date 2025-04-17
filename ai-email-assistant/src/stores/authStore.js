@@ -3,6 +3,8 @@ import axios from "../config/axios";
 import { privatePaths } from "../config/routes";
 import toast, { Toaster } from "react-hot-toast";
 import { getValidToken } from "../utils/tokenUtils";
+// import Cookies from 'js-cookie';
+
 
 // const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
 // const { REACT_APP_GOOGLE_REDIRECT_URI } = process.env;
@@ -75,6 +77,7 @@ class AuthStore {
     });
     try {
       const accessToken = await getValidToken();
+      console.log("access token", accessToken)
       if (!accessToken) {
         throw new Error("No valid access token found");
       }
