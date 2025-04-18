@@ -1,10 +1,9 @@
 import { makeObservable, observable, action, runInAction } from "mobx";
 import axios from "../config/axios";
 import { privatePaths } from "../config/routes";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { getValidToken } from "../utils/tokenUtils";
 // import Cookies from 'js-cookie';
-
 
 // const { REACT_APP_GOOGLE_CLIENT_ID } = process.env;
 // const { REACT_APP_GOOGLE_REDIRECT_URI } = process.env;
@@ -71,26 +70,30 @@ class AuthStore {
       });
   };
 
-  fetchEmails = async ({ inquiry = false, support = false, grievance = false }) => {
+  fetchEmails = async ({
+    inquiry = false,
+    support = false,
+    grievance = false,
+  }) => {
     runInAction(() => {
       this.isLoadingEmails = true;
     });
     try {
       const accessToken = await getValidToken();
-      console.log("access token", accessToken)
+      console.log("access token", accessToken);
       if (!accessToken) {
         throw new Error("No valid access token found");
       }
 
       const response = await axios.get("/emails/", {
-        params: { 
+        params: {
           inquiry,
           support,
-          grievance
+          grievance,
         },
         headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (response.status === 200) {
@@ -126,8 +129,8 @@ class AuthStore {
 
       const response = await axios.get("/sent-mails/", {
         headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (response.status === 200) {
@@ -159,22 +162,24 @@ class AuthStore {
 
       const response = await axios.delete(`/delete-email/${messageId}/`, {
         headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
-      
+
       if (response.status === 200) {
         const currentEmails = localStorage.getItem("email") || "[]";
         const emailsArray = JSON.parse(currentEmails);
-        const updatedEmails = emailsArray.filter(email => email.id !== messageId);
-        
+        const updatedEmails = emailsArray.filter(
+          (email) => email.id !== messageId
+        );
+
         runInAction(() => {
           this.emails = JSON.stringify(updatedEmails);
           localStorage.setItem("email", JSON.stringify(updatedEmails));
         });
-        
+
         toast.success("Email deleted successfully!");
-        
+
         await this.fetchEmails({ inquire: false });
       } else {
         throw new Error("Failed to delete email");
@@ -187,9 +192,9 @@ class AuthStore {
 
   handleGoogleToken = async (idToken, accessToken, navigate) => {
     try {
-      const response = await axios.post("/auth/google-login/", { 
+      const response = await axios.post("/auth/google-login/", {
         id_token: idToken,
-        access_token: accessToken 
+        access_token: accessToken,
       });
       if (response.status === 200) {
         const { user } = response.data;
@@ -198,15 +203,15 @@ class AuthStore {
           this.userInfo = {
             email: user.email,
             name: user.name,
-            isNew: user.is_new
+            isNew: user.is_new,
           };
           localStorage.setItem("userInfo", JSON.stringify(this.userInfo));
         });
         toast.success("Successfully logged in with Google");
-        
+
         // Fetch emails after successful login
         await this.fetchEmails({ inquiry: false });
-        
+
         if (navigate) {
           navigate("/inbox", { replace: true });
         }
@@ -229,7 +234,7 @@ class AuthStore {
       localStorage.removeItem("gmail_access_token");
       localStorage.removeItem("google_refresh_token");
       localStorage.removeItem("token_timestamp");
-      
+
       // Clear store state
       this.user = {};
       this.emails = [];
@@ -239,114 +244,12 @@ class AuthStore {
 
       // Clear axios default headers
       delete axios.defaults.headers.common["Authorization"];
-      
+
       // Execute callback if provided
       callback && callback();
     });
   };
-
-  uploadManual = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('filename', file.name);  
-      
-      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-      if (userInfo?.email) {
-        formData.append('email', userInfo.email);
-      } else {
-        throw new Error("User email not found in localStorage");
-      }
-    
-      const response = await axios.post('/api/manuals/', formData, {
-        headers: {         
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-  
-      runInAction(() => {
-        this.manuals = [...this.manuals, response.data];
-      });
-  
-      toast.success('Manual uploaded successfully!');
-      return response.data;
-  
-    } catch (error) {
-      console.error('Error uploading manual:', error);
-      toast.error(
-        error.response?.status === 409
-          ? 'A manual with this filename already exists.'
-          : error.response?.data?.message || 'Failed to upload manual'
-      );
-      throw error;
-    }
-  };
-  
-  
 }
-
-  
-
-  // Function to fetch all manuals
-  // fetchManuals = async () => {
-  //   runInAction(() => {
-  //     this.isLoadingManuals = true;
-  //   });
-
-  //   try {
-  //     const response = await fetch('/api/manuals/', {
-  //       headers: {
-  //         'Authorization': `Bearer ${this.accessToken}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch manuals');
-  //     }
-
-  //     const data = await response.json();
-      
-  //     runInAction(() => {
-  //       this.manuals = data;
-  //       this.isLoadingManuals = false;
-  //     });
-
-  //     return data;
-  //   } catch (error) {
-  //     console.error('Error fetching manuals:', error);
-  //     toast.error('Failed to fetch manuals');
-  //     runInAction(() => {
-  //       this.isLoadingManuals = false;
-  //     });
-  //     throw error;
-  //   }
-  // };
-
-  // Function to delete a manual
-  // deleteManual = async (id) => {
-  //   try {
-  //     const response = await fetch(`/api/manuals/${id}/`, {
-  //       method: 'DELETE',
-  //       headers: {
-  //         'Authorization': `Bearer ${this.accessToken}`,
-  //       },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to delete manual');
-  //     }
-
-  //     runInAction(() => {
-  //       this.manuals = this.manuals.filter(manual => manual.id !== id);
-  //     });
-
-  //     toast.success('Manual deleted successfully!');
-  //   } catch (error) {
-  //     console.error('Error deleting manual:', error);
-  //     toast.error('Failed to delete manual');
-  //     throw error;
-  //   }
-  // };
 
 const authStore = new AuthStore();
 export default authStore;
