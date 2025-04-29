@@ -29,11 +29,17 @@ class AIResponseStore {
     });
 
     try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      if (!userInfo?.email) {
+        throw new Error("User email not found in localStorage");
+      }
+
       const response = await axios.post("/generate-reply/", {
         to: to,
         from: from,
         subject: subject,
         email_body: emailBody,
+        user_email: userInfo.email,  
       });
       if (response.status === 200 && response.data.body) {
         runInAction(() => {
