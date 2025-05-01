@@ -21,7 +21,7 @@ const HomePage = observer(() => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredManuals, setFilteredManuals] = useState(manualStore.manuals);
+  const [filteredManuals, setFilteredManuals] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
 
@@ -58,7 +58,7 @@ const HomePage = observer(() => {
       await manualStore.uploadManual(selectedFile);
       setSelectedFile(null);
     } catch (error) {
-      // Handled in the store
+      // Error already handled in store
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +69,7 @@ const HomePage = observer(() => {
       const file = acceptedFiles[0];
       setSelectedFile(file);
     },
-    accept: ".pdf",
+    accept: { "application/pdf": [".pdf"] },
   });
 
   return (
@@ -82,14 +82,7 @@ const HomePage = observer(() => {
       }}
     >
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            borderRadius: 2,
-            backgroundColor: "white",
-          }}
-        >
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2, backgroundColor: "white" }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Manuals Management
           </Typography>
@@ -135,7 +128,6 @@ const HomePage = observer(() => {
           {/* Upload Button */}
           <Button
             variant="contained"
-            color="primary"
             onClick={handleUpload}
             disabled={!selectedFile || isLoading}
             startIcon={isLoading ? <CircularProgress size={16} /> : null}
@@ -145,6 +137,8 @@ const HomePage = observer(() => {
               fontSize: "0.875rem",
               minWidth: "auto",
               height: "38px",
+              backgroundColor: "#407BFF",
+              mb: 3,
             }}
           >
             {isLoading ? "Uploading..." : "Upload"}
@@ -155,7 +149,27 @@ const HomePage = observer(() => {
             {currentManuals.length > 0 ? (
               currentManuals.map((file) => {
                 if (!file || !file.filename) return null;
-                return <ManualItem key={file.id} file={file} />;
+                return (
+                  <Box key={file.id} sx={{ mb: 2 }}>
+                    <ManualItem file={file} />
+                    <Button
+                      variant="outlined"
+                      // size="small"
+                      color="error"
+                      onClick={() => manualStore.retryEmbeddings(file.id)}
+                      sx={{
+                        py: 0.5,
+                        px: 2,
+                        fontSize: "0.875rem",
+                        minWidth: "auto",
+                        height: "38px",                       
+                        mb: 3,
+                      }}
+                    >
+                      Retry Embeddings
+                    </Button>
+                  </Box>
+                );
               })
             ) : (
               <Typography variant="body1" color="textSecondary" align="center">
@@ -165,14 +179,24 @@ const HomePage = observer(() => {
           </List>
 
           {/* Pagination */}
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Pagination
-              count={Math.ceil(filteredManuals.length / itemsPerPage)}
-              page={currentPage}
-              onChange={handlePageChange}
-              color="primary"
-            />
-          </Box>
+          {filteredManuals.length > itemsPerPage && (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <Pagination
+                count={Math.ceil(filteredManuals.length / itemsPerPage)}
+                page={currentPage}
+                onChange={handlePageChange}
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    color: "#5932EA",
+                  },
+                  "& .MuiPaginationItem-root.Mui-selected": {
+                    backgroundColor: "#5932EA",
+                    color: "white",
+                  },
+                }}
+              />
+            </Box>
+          )}
         </Paper>
       </Container>
     </Box>

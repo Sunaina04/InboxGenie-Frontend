@@ -155,7 +155,7 @@ const Layout = ({ children }) => {
                       width: 32,
                       height: 32,
                       marginRight: "12px",
-                      bgcolor: "#554FEB",
+                      bgcolor: "#5932EA",
                       color: "#fff"
                     }}
                   >

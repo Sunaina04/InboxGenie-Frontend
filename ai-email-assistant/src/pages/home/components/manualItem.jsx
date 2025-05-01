@@ -7,15 +7,14 @@ import {
   TextField,
   Tooltip,
   Typography,
+  CircularProgress
 } from "@mui/material";
 import { Delete, Edit, Save, Close } from "@mui/icons-material";
 import manualStore from "../../../stores/mannualStore";
 
 const ManualItem = ({ file }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [newFilename, setNewFilename] = useState(
-    file.filename || "Unnamed manual"
-  );
+  const [newFilename, setNewFilename] = useState(file.filename || "Unnamed manual");
 
   const handleRename = async () => {
     if (newFilename.trim() && newFilename !== file.filename) {
@@ -25,7 +24,28 @@ const ManualItem = ({ file }) => {
   };
 
   const handleDelete = () => {
-    manualStore.deleteManual(file.id);
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this manual?\n\nThis action will also delete its associated embeddings and cannot be undone."
+    );
+    if (confirmed) {
+      manualStore.deleteManual(file.id);
+    }
+  };
+  
+  const renderStatus = () => {
+    if (file.embedding_status === "pending") {
+      return <Typography variant="body2" color="orange">Pending</Typography>;
+    }
+    if (file.embedding_status === "processing") {
+      return <CircularProgress size={16} color="primary" />;
+    }
+    if (file.embedding_status === "success") {
+      return <Typography variant="body2" color="green">Completed</Typography>;
+    }
+    if (file.embedding_status === "failed") {
+      return <Typography variant="body2" color="red">Failed</Typography>;
+    }
+    return null;
   };
 
   return (
@@ -59,16 +79,20 @@ const ManualItem = ({ file }) => {
               href={file.file}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ textDecoration: "none", color: "#1976d2" }}
+              style={{ textDecoration: "none", color: "#407BFF" }}
             >
-              {file.filename || "Unnamed manual"}{" "}
-              {/* Fallback if filename is undefined */}
+              {file.filename || "Unnamed manual"}
             </a>
             <Typography variant="body2" color="textSecondary" sx={{ mt: 0.5 }}>
               Uploaded at: {new Date(file.uploaded_at).toLocaleString()}
             </Typography>
           </Box>
         )}
+        
+        {/* Display Embedding Status */}
+        <Box sx={{ mt: 1 }}>
+          {renderStatus()}
+        </Box>
       </Box>
 
       <Box sx={{ display: "flex", gap: 1, ml: 2 }}>
@@ -83,7 +107,7 @@ const ManualItem = ({ file }) => {
               <IconButton
                 onClick={() => {
                   setIsEditing(false);
-                  setNewFilename(file.filename || "Unnamed manual"); // Reset to previous filename or fallback
+                  setNewFilename(file.filename || "Unnamed manual");
                 }}
               >
                 <Close />

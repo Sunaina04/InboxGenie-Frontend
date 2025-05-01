@@ -12,6 +12,7 @@ class ManualStore {
       fetchManuals: action,
       deleteManual: action,
       renameManual: action,
+      retryEmbeddings: action,
     });
   }
 
@@ -72,18 +73,28 @@ class ManualStore {
 
   deleteManual = async (manualId) => {
     try {
-      await axios.delete(`/api/delete-manual/${manualId}/`);
-
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const email = userInfo?.email;
+  
+      if (!email) throw new Error("User email not found in localStorage");
+  
+      await axios.delete(`/api/delete-manual/${manualId}/`, {
+        params: {
+          email: email,
+        },
+      });
+  
       runInAction(() => {
         this.manuals = this.manuals.filter((manual) => manual.id !== manualId);
       });
-
+  
       toast.success("Manual deleted successfully!");
     } catch (error) {
       console.error("Error deleting manual:", error);
       toast.error("Failed to delete manual");
     }
   };
+  
 
   renameManual = async (id, newFilename) => {
     try {
@@ -103,6 +114,25 @@ class ManualStore {
       console.error("Rename error:", error);
     }
   };
+
+  retryEmbeddings = async (manualId) => {
+    try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const email = userInfo?.email;
+  
+      if (!email) throw new Error("User email not found in localStorage");
+  
+      const response = await axios.post(`/api/manuals/${manualId}/retry-embedding/`, {
+        user_email: email,
+      });
+  
+      toast.success("Retry triggered successfully!");
+      this.fetchManuals?.();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to retry embeddings.");
+    }
+  };  
 }
 
 const manualStore = new ManualStore();
