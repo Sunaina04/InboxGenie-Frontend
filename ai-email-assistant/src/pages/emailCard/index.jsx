@@ -22,6 +22,7 @@ const EmailCard = observer(({
   handleAIResponse,
   handleReply,
   handleSendEmail,
+  openInEditMode,
 }) => {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
@@ -70,6 +71,14 @@ const EmailCard = observer(({
       setLoading(false);
     }
   };
+
+  const handleBlankReply = () => {
+    if (!email) return;
+    // const signature = "--\nYour Name";
+    // setAIResponse(`\n\n${signature}`);
+    // setOpenDialog(true);
+  };
+  
   // Updated function to extract name and email
   const getSenderInfo = (emailString) => {
     // Use a regular expression to extract the name and email
@@ -196,7 +205,7 @@ const EmailCard = observer(({
           <Button
             variant="contained"
             onClick={() => {
-              generateAIResponse();
+              handleBlankReply();
               setShowReplyBox(!showReplyBox);
             }}
             sx={{
@@ -273,6 +282,7 @@ const EmailCard = observer(({
           handleCancel={() => setShowReplyBox(false)}
           aiResponse={aiResponse}
           handleSendEmail={handleSendEmail}
+          editMode={true}
         />
       )}
     </>

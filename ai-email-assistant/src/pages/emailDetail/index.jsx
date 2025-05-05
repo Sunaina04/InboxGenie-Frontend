@@ -22,6 +22,7 @@ const EmailDetail = () => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [aiResponse, setAIResponse] = useState("");
+  const [openInEditMode, setOpenInEditMode] = useState(false);
   const isInbox = location.pathname.includes("sent_email");
   const backPath = isInbox ? "/sent" : "/inbox";
 
@@ -44,9 +45,17 @@ const EmailDetail = () => {
       });
   };
 
+  const handleBlankReply = () => {
+    if (!email) return;
+    // const signature = getDefaultSignature();
+    // setAIResponse(`\n\n${signature}`);
+    setOpenInEditMode(true);
+    setOpenDialog(true);
+  };
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setAIResponse("");
+    setOpenInEditMode(false);
   };
 
   const handleSendEmail = () => {
@@ -80,8 +89,9 @@ const EmailDetail = () => {
             key={email.id}
             email={email}
             handleAIResponse={!isInbox ? handleAIResponse : null}
-            handleReply={!isInbox ? handleAIResponse : null}
+            handleReply={!isInbox ? handleBlankReply : null}
             handleSendEmail={handleSendEmail}
+            openInEditMode={openInEditMode}
           />
         ) : (
           <Typography variant="body1" color="textSecondary" align="center">
@@ -117,6 +127,7 @@ const EmailDetail = () => {
         handleApprove={() => alert("Approved")}
         handleEdit={() => alert("Edit")}
         handleSend={handleSendEmail}
+        openInEditMode={openInEditMode}
       />
 
     </>

@@ -12,6 +12,7 @@ const AIResponseDialog = ({
   handleClose,
   aiResponse,
   handleApprove,
+  openInEditMode = false,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedResponse, setEditedResponse] = useState(aiResponse);
@@ -24,7 +25,8 @@ const AIResponseDialog = ({
     setEditedResponse(aiResponse);
     setEditedSender(email ? email.from : "");
     setLoading(false);
-  }, [aiResponse, open, email]);
+    setIsEditing(openInEditMode); 
+  }, [aiResponse, open, email, openInEditMode]);
 
   const handleEdit = () => setIsEditing(true);
 
