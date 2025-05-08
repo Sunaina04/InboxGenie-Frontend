@@ -84,9 +84,10 @@ const EmailItem = ({ email, onSelect, onClick }) => {
             backgroundColor: email.is_read ? "#f1f3f4" : "#f5f5f5",
           },
           cursor: "pointer",
+          overflow: "hidden"
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1, overflow: "hidden" }}>
           <Checkbox
             checked={email.isSelected}
             onChange={(e) => {
@@ -105,7 +106,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
           />
 
           <Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
               <Box sx={{ flex: 1, paddingRight: "16px" }}>
                 <Typography
                   variant="body1"
@@ -119,17 +120,18 @@ const EmailItem = ({ email, onSelect, onClick }) => {
                   {getSenderName(displayEmail)}
                 </Typography>
               </Box>
-              <Box sx={{ display: "flex", flexDirection: "row", gap: 4, alignItems: "baseline" }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, overflow: "hidden", minWidth: 0, flexGrow: 1 }}>
                 <Typography
                   variant="caption"
                   sx={{
+                    flex: "0 0 300px",
                     color: "#5f6368",
                     fontSize: "15px",
                     fontWeight: 600,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    maxWidth: "350px",
+                    maxWidth: "180px"
                   }}
                 >
                   {email.subject} -
@@ -138,13 +140,14 @@ const EmailItem = ({ email, onSelect, onClick }) => {
                 <Typography
                   variant="caption"
                   sx={{
+                    flex: "1 1 auto",
                     color: "#5f6368",
-                    paddingLeft: 2,
                     fontSize: "14px",
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
-                    maxWidth: "500px",
+                    flexGrow: 1,
+                    minWidth: 0,
                   }}
                 >
                   {email.body || "No content available."}
@@ -221,7 +224,7 @@ const EmailItem = ({ email, onSelect, onClick }) => {
           <Typography fontSize="14px" marginBottom={2}>
             Are you sure you want to delete this email?
             <br />
-            <strong>This will also remove it from your original Gmail inbox.</strong>
+            <strong>This will also remove it from your original inbox.</strong>
           </Typography>
         </DialogContent>
 

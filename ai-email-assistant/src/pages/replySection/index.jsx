@@ -12,7 +12,7 @@ import { Send, Close } from "@mui/icons-material";
 import emailStore from "../../stores/emailStore";
 import toast from "react-hot-toast";
 
-const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse, editMode= false}) => {
+const ReplySection = ({ email, handleSendReply, handleCancel, aiResponse, editMode = false }) => {
   const [replyText, setReplyText] = useState(aiResponse || "");
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(editMode);
